@@ -1,0 +1,36 @@
+/* Urgent Orders - High Priority */
+.table tr.urgent {
+    background-color: red !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Warning Orders - Potential Delay */
+.table tr.warning {
+    background-color: yellow !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+/* Standard Orders - Regular Queue */
+.table tr.standard {
+    background-color: blue!important;
+    color: white !important;
+}
+
+/*tr.urgent, tr.warning, tr.standard {
+    border: 5px solid lime !important;
+}*/
+
+.table tr.urgent > td {
+    background-color: red !important;
+    color: white !important;
+}
+.table tr.warning > td {
+    background-color: yellow !important;
+    color: black !important;
+}
+.table tr.standard > td {
+    background-color: blue !important;
+    color: white !important;
+}
