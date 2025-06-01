@@ -78,15 +78,16 @@ const AddOrder = () => {
             const response = await axios.post("https://queue-system-ewrn.onrender.com/api/orders", 
                 newOrder, 
                 { headers: { "Content-Type": "application/json", Accept: "application/json" }});
-            console.log("✅ Order added successfully:", response.data);
+            
+            if (response.data && response.data.success && response.data.data) {
+                    const order = response.data.data;
 
-            console.log("📤 Type of response.data::", typeof response.data);
-
-            console.log("🌐 Full Axios Response:", response);
-
-
-            alert("Order added successfully!");
-
+                    console.log("✅ Order added successfully:", order);
+                    // Optionally show success to user
+                    } else {
+                    console.error("🚨 Error: Order data missing in response!", response.data);
+                    }
+                    
             if (response.data && response.data.transaction_id) {
                 setTimeout(() => {
                     printReceipt(response.data); // ✅ Ensure function is called after submission
