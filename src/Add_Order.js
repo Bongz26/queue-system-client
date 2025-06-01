@@ -61,7 +61,7 @@ const AddOrder = () => {
     customer_name: clientName,
     client_contact: clientContact,
     paint_type: paintType,
-    colour_code: category === "New Mix" ? "Pending" : colorCode,
+    colour_code: category === "New Mix" ? "Pending" : colorCode || "N/A",
     category,
     start_time: adjustedStartTime,
     estimated_completion: calculateETC(category, 5) || "N/A", // ✅ Default to prevent missing values
