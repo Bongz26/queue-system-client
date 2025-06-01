@@ -40,7 +40,7 @@ const AddOrder = () => {
         }
 
         try {
-            const existingOrderCheck = await axios.get("https://queue-system-ewrn.onrender.com/check-duplicate", {
+            const existingOrderCheck = await axios.get("https://queue-system-ewrn.onrender.com/api/check-duplicate", {
                 params: { customer_name: clientName, client_contact: clientContact, paint_type: paintType, category },
                 timeout: 10000
             });
@@ -71,7 +71,7 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-            const response = await axios.post("https://queue-system-ewrn.onrender.com/orders", newOrder);
+            const response = await axios.post("https://queue-system-ewrn.onrender.com/api/orders", newOrder);
             console.log("✅ Order added successfully:", response.data);
             alert("Order added successfully!");
 
