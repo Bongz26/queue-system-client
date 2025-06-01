@@ -75,7 +75,9 @@ const AddOrder = () => {
                 newOrder, 
                 { headers: { "Content-Type": "application/json", Accept: "application/json" }});
             console.log("✅ Order added successfully:", response.data);
-            console.log("📤 Type of response.data:", typeof response.data);
+
+            console.log("📤 Type of response.data::", typeof response.data);
+
             console.log("🌐 Full Axios Response:", response);
 
 
