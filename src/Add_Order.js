@@ -8,7 +8,7 @@ const AddOrder = () => {
     const [clientContact, setClientContact] = useState("");
     const [category, setCategory] = useState("New Mix");
     const [paintType, setPaintType] = useState("");
-    const [colorCode, setColorCode] = useState("");
+    const [colourCode, setColorCode] = useState("");
 
     // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
     const generateTransactionID = (input) => {
@@ -61,7 +61,7 @@ const AddOrder = () => {
     customer_name: clientName,
     client_contact: clientContact,
     paint_type: paintType,
-    color_code: category === "New Mix" ? "Pending" : colorCode,
+    colour_code: category === "New Mix" ? "Pending" : colorCode,
     category,
     start_time: adjustedStartTime,
     estimated_completion: calculateETC(category, 5) || "N/A", // ✅ Default to prevent missing values
@@ -165,8 +165,8 @@ const AddOrder = () => {
                 <label>Paint Type:</label>
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
-                <label>Color Code:</label>
-                <input type="text" className="form-control" value={colorCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
+                <label>Colour Code:</label>
+                <input type="text" className="form-control" value={colourCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
             </form>
