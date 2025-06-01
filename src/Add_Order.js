@@ -8,7 +8,7 @@ const AddOrder = () => {
     const [clientContact, setClientContact] = useState("");
     const [category, setCategory] = useState("New Mix");
     const [paintType, setPaintType] = useState("");
-    const [colourCode, setColorCode] = useState("");
+    const [colorCode, setColorCode] = useState("");
 
     // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
     const generateTransactionID = (input) => {
@@ -166,7 +166,7 @@ const AddOrder = () => {
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
                 <label>Colour Code:</label>
-                <input type="text" className="form-control" value={colourCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
+                <input type="text" className="form-control" value={colorCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
             </form>
