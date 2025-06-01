@@ -71,8 +71,13 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-            const response = await axios.post("https://queue-system-ewrn.onrender.com/api/orders", newOrder);
+            const response = await axios.post("https://queue-system-ewrn.onrender.com/api/orders", 
+                newOrder, 
+                { headers: { "Content-Type": "application/json", Accept: "application/json" }});
             console.log("✅ Order added successfully:", response.data);
+            console.log("🌐 Full Axios Response:", response);
+
+
             alert("Order added successfully!");
 
             if (response.data && response.data.transaction_id) {
