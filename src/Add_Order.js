@@ -40,18 +40,22 @@ const AddOrder = () => {
         }
 
         try {
-            const existingOrderCheck = await axios.get("https://queue-system-ewrn.onrender.com/api/check-duplicate", {
-                params: { customer_name: clientName, client_contact: clientContact, paint_type: paintType, category },
-                timeout: 10000
-            });
+    // ⏰ Wake backend to reduce cold start delay
+    await axios.get("https://queue-system-ewrn.onrender.com/");
 
-            if (existingOrderCheck.data.exists) {
-                alert("❌ This order already exists! Duplicate entries are not allowed.");
-                return;
+    const existingOrderCheck = await axios.get("https://queue-system-ewrn.onrender.com/api/check-duplicate", {
+        params: { customer_name: clientName, client_contact: clientContact, paint_type: paintType, category },
+        timeout: 20000
+                });
+
+                if (existingOrderCheck.data.exists) {
+                    alert("❌ This order already exists! Duplicate entries are not allowed.");
+                    return;
+                }
+            } catch (error) {
+                console.error("🚨 Error checking for duplicate orders:", error.message);
             }
-        } catch (error) {
-            console.error("🚨 Error checking for duplicate orders:", error.message);
-        }
+
 
         const adjustedStartTime = new Date(new Date().getTime() + 2 * 60 * 60 * 1000);
         const formattedTransactionID = generateTransactionID(transactionID);
@@ -100,6 +104,11 @@ const AddOrder = () => {
 
         } catch (error) {
             console.error("🚨 Error adding order:", error.message);
+            if (error.message.includes("Network Error")) {
+        alert("❌ Network error! Please check your internet or try again shortly.");
+    } else {
+        console.error("🚨 Error adding order:", error.message);
+    }
         }
     };
 
