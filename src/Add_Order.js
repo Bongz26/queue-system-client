@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { calculateETC } from "./utils/calculateETC";
+import { calculateETC } from "./utils/calculateETC";    
+
+const BASE_URL = "https://queue-system-ewrn.onrender.com";
 
 const AddOrder = () => {
     const [transactionID, setTransactionID] = useState("");
@@ -75,42 +77,34 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-            const response = await axios.post("https://queue-system-ewrn.onrender.com/api/orders", 
-                newOrder, 
-                { headers: { "Content-Type": "application/json", Accept: "application/json" }});
-            
-            if (response.data && response.data.success && response.data.data) {
-                    const order = response.data.data;
+    const response = await axios.post(`${BASE_URL}/api/orders`, newOrder);
 
-                    console.log("✅ Order added successfully:", order);
-                    // Optionally show success to user
-                    } else {
-                    console.error("🚨 Error: Order data missing in response!", response.data);
-                    }
-                    
-            if (response.data && response.data.transaction_id) {
-                setTimeout(() => {
-                    printReceipt(response.data); // ✅ Ensure function is called after submission
-                }, 500);
-            } else {
-                console.error("🚨 Error: Order data missing in response!");
-            }
-
-            setTransactionID("");
-            setClientName("");
-            setClientContact("");
-            setPaintType("");
-            setColorCode("");
-            setCategory("New Mix");
-
-        } catch (error) {
-            console.error("🚨 Error adding order:", error.message);
-            if (error.message.includes("Network Error")) {
-        alert("❌ Network error! Please check your internet or try again shortly.");
-    } else {
-        console.error("🚨 Error adding order:", error.message);
+    if (!response.data || !response.data.transaction_id) {
+        console.error("🚨 Error: Order data missing in response!");
+        return;
     }
-        }
+
+    console.log("✅ Order added successfully:", response.data);
+
+    setTimeout(() => {
+        printReceipt(response.data);
+    }, 500);
+
+    // ✅ Clear form after successful submission
+    setTransactionID("");
+    setClientName("");
+    setClientContact("");
+    setPaintType("");
+    setColorCode("");
+    setCategory("New Mix");
+
+} catch (error) {
+    console.error("🚨 Error adding order:", error.message);
+    if (error.message.includes("Network Error")) {
+        alert("❌ Network error! Please check your internet or try again shortly.");
+    }
+}
+
     };
 
     // ✅ Receipt Printing Function
