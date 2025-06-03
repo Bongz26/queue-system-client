@@ -98,6 +98,7 @@ const Dashboard = () => {
                             <td>
                                 <select
                                     className="form-select"
+                                    value={order.current_status}
                                     onChange={(e) => updateStatus(order.id, e.target.value, order.client_contact)}
                                 >
                                     {order.current_status && !["Mixing", "Ready"].includes(order.current_status) && (
