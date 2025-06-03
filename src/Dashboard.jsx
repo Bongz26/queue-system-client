@@ -104,6 +104,7 @@ const Dashboard = () => {
                                         <option value={order.current_status}>{order.current_status}</option> 
                                     )}
                                     <option value="Mixing">Mixing</option> 
+                                    <option value="Testing">Sprying</option>
                                     <option value="Ready">Ready</option> 
                                 </select>
                             </td>
