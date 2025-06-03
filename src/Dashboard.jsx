@@ -81,7 +81,7 @@ const Dashboard = () => {
                         <th>Start Time</th>
                         <th>ETC</th>
                         <th>Status</th>
-                        <th>Client Contact</th>
+                        <th>Customer</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -94,7 +94,7 @@ const Dashboard = () => {
                             <td>{order.start_time}</td>
                             <td>{order.dynamicETC}</td> 
                             <td>{order.current_status}</td>
-                            <td>{order.client_contact}</td>
+                            <td>{order.customer_name}</td>
                             <td>
                                 <select
                                     className="form-select"
