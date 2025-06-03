@@ -76,8 +76,8 @@ const Dashboard = () => {
                 <thead>
                     <tr>
                         <th>Transaction ID</th>
-                        <th>Color Code</th> 
-                        <th>Paint Type</th>
+                        <th>Colour Code</th> 
+                        <th>Colour</th>
                         <th>Start Time</th>
                         <th>ETC</th>
                         <th>Status</th>
