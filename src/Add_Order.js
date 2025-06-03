@@ -70,7 +70,7 @@ const AddOrder = () => {
     colour_code: category === "New Mix" ? "Pending" : colorCode || "N/A",
     category,
     start_time: adjustedStartTime,
-    estimated_completion: calculateETC(category, 5) || "N/A", // ✅ Default to prevent missing values
+    estimated_completion: new Date(new Date().getTime() + calculateETC(category, 5) * 60 * 1000).toISOString(), //PostgreSQL requires a timestamp
     current_status: "Waiting" // ✅ Set a default status
 };
 
