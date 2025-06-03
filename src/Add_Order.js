@@ -6,7 +6,7 @@ const calculateETC = (category) => {
     if (category === "New Mix") return  120; // 40 minutes
     if (category === "Reorder Mix") return 20; // 20 minutes
     if (category === "Colour Code") return 60; // 15 minutes
-    return return; // Fallback value
+    return 0;// Fallback value
 };
 
 const BASE_URL = "https://queue-backendser.onrender.com";
