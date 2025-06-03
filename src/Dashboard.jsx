@@ -12,7 +12,7 @@ const Dashboard = () => {
    const fetchOrders = useCallback(async () => {
     try {
         console.log("🔄 Fetching orders from API...");
-        const response = await axios.get("https://queue-system-ewrn.onrender.com/api/orders");
+        const response = await axios.get("https://queue-backendser.onrender.com/api/orders");
         console.log("✅ Full API Orders Data:", JSON.stringify(response.data, null, 2)); // Debugging API response
 
         const updatedOrders = response.data.map(order => ({
