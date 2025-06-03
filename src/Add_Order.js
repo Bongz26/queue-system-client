@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { calculateETC } from "./utils/calculateETC";    
 
-const BASE_URL = "https://queue-system-ewrn.onrender.com";
+const BASE_URL = "https://queue-backendser.onrender.com";
 
 const AddOrder = () => {
     const [transactionID, setTransactionID] = useState("");
