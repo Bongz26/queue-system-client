@@ -43,7 +43,7 @@ const AddOrder = () => {
 
         try {
     // ⏰ Wake backend to reduce cold start delay
-    await axios.get("https://queue-system-ewrn.onrender.com/");
+    await axios.get(BASE_URL);
 
     const existingOrderCheck = await axios.get("https://queue-system-ewrn.onrender.com/api/check-duplicate", {
         params: { customer_name: clientName, client_contact: clientContact, paint_type: paintType, category },
@@ -77,7 +77,7 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-    const response = await axios.post(`${BASE_URL}/orders`, newOrder);
+    const response = await axios.post(`${BASE_URL}/api/orders`, newOrder);
 
     if (!response.data || !response.data.transaction_id) {
         console.error("🚨 Error: Order data missing in response!");
