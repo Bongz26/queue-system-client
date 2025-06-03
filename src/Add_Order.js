@@ -81,7 +81,7 @@ const AddOrder = () => {
             colour_code: category === "New Mix" ? "Pending" : colorCode || "N/A",
             category,
             start_time: adjustedStartTime,
-            estimated_completion: estimatedCompletionTime, // ✅ Properly formatted timestamp
+            estimated_completion: formattedETC, // ✅ Properly formatted timestamp
             current_status: "Waiting"
         };
 
