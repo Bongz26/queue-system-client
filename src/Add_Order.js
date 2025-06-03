@@ -67,11 +67,9 @@ const AddOrder = () => {
 
         const adjustedStartTime = new Date(Date.now() + 2 * 60 * 60 * 1000); // ✅ Adjust UTC time by 2 hours
         const formattedTransactionID = generateTransactionID(transactionID);
-        const estimatedMinutes = calculateETC(category, 5); // ✅ Ensure a number is returned
-        const estimatedCompletionTime = new Date(Date.now() + estimatedMinutes * 60 * 1000).toISOString(); // ✅ Convert to timestamp
-        const formattedETC = estimatedCompletionTime.toLocaleString("en-GB", {
-                    timeZone: "Africa/Johannesburg",
-                    hour12: false});
+        const estimatedMinutes = calculateETC(category, 5);// ✅ Ensure a number is returned
+        const estimatedCompletionTime = new Date(Date.now() + estimatedMinutes * 60 * 1000 + 2 * 60 * 60 * 1000); // ✅ Convert to utc+ 2 timestamp
+        const formattedETC = estimatedCompletionTime.toISOString().replace("T", " ").split
 
         const newOrder = {
             transaction_id: formattedTransactionID,
