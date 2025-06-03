@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import axios from "axios";
 
 // ✅ Ensure `calculateETC()` returns ONLY a number (not "40 mins")
-const calculateETC = (category, baseTime) => {
-    if (category === "New Mix") return baseTime + 120; // 40 minutes
-    if (category === "Reorder Mix") return baseTime + 20; // 20 minutes
-    if (category === "Colour Code") return baseTime + 60; // 15 minutes
-    return baseTime; // Fallback value
+const calculateETC = (category) => {
+    if (category === "New Mix") return  120; // 40 minutes
+    if (category === "Reorder Mix") return 20; // 20 minutes
+    if (category === "Colour Code") return 60; // 15 minutes
+    return return; // Fallback value
 };
 
 const BASE_URL = "https://queue-backendser.onrender.com";
 
-const AddOrder = () => {
+    const AddOrder = () => {
     const [transactionID, setTransactionID] = useState("");
     const [clientName, setClientName] = useState("");
     const [clientContact, setClientContact] = useState("");
