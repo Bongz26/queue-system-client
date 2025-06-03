@@ -3,9 +3,9 @@ import axios from "axios";
 
 // ✅ Ensure `calculateETC()` returns ONLY a number (not "40 mins")
 const calculateETC = (category, baseTime) => {
-    if (category === "New Mix") return baseTime + 40; // 40 minutes
+    if (category === "New Mix") return baseTime + 120; // 40 minutes
     if (category === "Reorder Mix") return baseTime + 20; // 20 minutes
-    if (category === "Colour Code") return baseTime + 15; // 15 minutes
+    if (category === "Colour Code") return baseTime + 60; // 15 minutes
     return baseTime; // Fallback value
 };
 
