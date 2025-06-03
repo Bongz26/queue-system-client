@@ -70,13 +70,14 @@ const AddOrder = () => {
     colour_code: category === "New Mix" ? "Pending" : colorCode || "N/A",
     category,
     start_time: adjustedStartTime,
-    estimated_completion: new Date(new Date().getTime() + calculateETC(category, 5) * 60 * 1000).toISOString(), //PostgreSQL requires a timestamp
+    estimated_completion: new Date(Date.now() + calculateETC(category, 5) * 60 * 1000).toISOString(), //PostgreSQL requires a timestamp then return a number
     current_status: "Waiting" // ✅ Set a default status
 };
 
         console.log("🚀 Sending order data:", newOrder);
-
+        
         try {
+            console.log("🚀 Debugging order data:", JSON.stringify(newOrder, null, 2));
     const response = await axios.post(`${BASE_URL}/api/orders`, newOrder);
 
     if (!response.data || !response.data.transaction_id) {
