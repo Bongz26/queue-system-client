@@ -77,7 +77,7 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-    const response = await axios.post(`${BASE_URL}/api/orders`, newOrder);
+    const response = await axios.post(`${BASE_URL}/orders`, newOrder);
 
     if (!response.data || !response.data.transaction_id) {
         console.error("🚨 Error: Order data missing in response!");
