@@ -67,7 +67,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
 
         const adjustedStartTime = new Date(Date.now() + 2 * 60 * 60 * 1000); // ✅ Adjust UTC time by 2 hours
         const formattedTransactionID = generateTransactionID(transactionID);
-        const estimatedMinutes = calculateETC(category, 5);// ✅ Ensure a number is returned
+        const estimatedMinutes = calculateETC(category);// ✅ Ensure a number is returned
         const estimatedCompletionTime = new Date(Date.now() + estimatedMinutes * 60 * 1000 + 2 * 60 * 60 * 1000); // ✅ Convert to utc+ 2 timestamp
         const formattedETC = estimatedCompletionTime.toISOString().replace("T", " ").split(".")[0]; // ✅ Fix formatting
 
