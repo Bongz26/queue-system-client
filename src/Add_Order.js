@@ -44,7 +44,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
         }
 
         if (paintType.trim() === "") {
-            alert("❌ Paint Type cannot be empty!");
+            alert("❌ Paint Colour cannot be empty!");
             return;
         }
 
@@ -145,7 +145,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
                 <p><strong>Order No:</strong> #${order.transaction_id}</p>
                 <p><strong>Client Name:</strong> ${order.customer_name}</p>
                 <p><strong>Contact:</strong> ${order.client_contact}</p>
-                <p><strong>Paint Type:</strong> ${order.paint_type}</p>
+                <p><strong>Paint Colour:</strong> ${order.paint_type}</p>
                 <p><strong>ETC:</strong> ${order.estimated_completion}</p>
                 <p><strong>TrackID:</strong> TRK-${order.transaction_id}</p>
                 <p><strong>WhatsApp Support:</strong> 083 579 6982</p>
@@ -178,7 +178,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
                     <option>Colour Code</option>
                 </select>
 
-                <label>Paint Type:</label>
+                <label>Paint Colour:</label>
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
                 <label>Colour Code:</label>
