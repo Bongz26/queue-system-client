@@ -69,7 +69,7 @@ const AddOrder = () => {
         const formattedTransactionID = generateTransactionID(transactionID);
         const estimatedMinutes = calculateETC(category, 5);// ✅ Ensure a number is returned
         const estimatedCompletionTime = new Date(Date.now() + estimatedMinutes * 60 * 1000 + 2 * 60 * 60 * 1000); // ✅ Convert to utc+ 2 timestamp
-        const formattedETC = estimatedCompletionTime.toISOString().replace("T", " ").split
+        const formattedETC = estimatedCompletionTime.toISOString().replace("T", " ").split(".")[0]; // ✅ Fix formatting
 
         const newOrder = {
             transaction_id: formattedTransactionID,
