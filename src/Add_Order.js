@@ -69,6 +69,9 @@ const AddOrder = () => {
         const formattedTransactionID = generateTransactionID(transactionID);
         const estimatedMinutes = calculateETC(category, 5); // ✅ Ensure a number is returned
         const estimatedCompletionTime = new Date(Date.now() + estimatedMinutes * 60 * 1000).toISOString(); // ✅ Convert to timestamp
+        const formattedETC = estimatedCompletionTime.toLocaleString("en-GB", {
+                    timeZone: "Africa/Johannesburg",
+                    hour12: false});
 
         const newOrder = {
             transaction_id: formattedTransactionID,
