@@ -20,11 +20,28 @@ const BASE_URL = "https://queue-backendser.onrender.com";
     const [paintType, setPaintType] = useState("");
     const [colorCode, setColorCode] = useState("");
 
+    const formatDateDDMMYYYY = () => {
+    const date = new Date();
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+    
+    return `${day}${month}${year}`;
+};
+
+
+
     // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
     const generateTransactionID = () => {
-       return Math.floor(Math.random() * 10000).toString().padStart(4, "0"); // Generates a 4-digit ID (0000-9999)
-    };
+    const currentDate = formatDateDDMMYYYY();
+   //new Date().toISOString().slice(0, 10).replace(/-/g, "");
         
+    // Generate random sequence from 0000 to 9999 (use sequential logic if backend tracks numbers)
+    const randomSequence = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+    
+    return `${currentDate}-${randomSequence}`;
+};
+       
    useEffect(() => {
         if (orderType === "Phone Order") {
             setTransactionID(generateTransactionID());
