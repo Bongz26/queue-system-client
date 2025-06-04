@@ -42,11 +42,12 @@ const Dashboard = () => {
         fetchActiveOrdersCount();
     }, [fetchOrders]);
 
-    const updateStatus = async (orderId, newStatus, clientNumber) => {
+    const updateStatus = async (orderId, newStatus, clientNumber, currentColourCode) => {
         console.log(`🛠 Updating order ${orderId} to ${newStatus}`);
 
         let employeeCode = null;
         let employeeName = null;
+        let updatedColourCode = currentColourCode;
 
         // ✅ If "Mixing" is selected, prompt for employee code
         if (newStatus === "Mixing") {
@@ -54,13 +55,11 @@ const Dashboard = () => {
             if (!employeeCode) return;
 
             try {
-                // ✅ Validate employee code and get name
                 const employeeResponse = await axios.get(`https://queue-backendser.onrender.com/api/employees?code=${employeeCode}`);
                 if (!employeeResponse.data || !employeeResponse.data.employee_name) {
                     alert("❌ Invalid Employee Code!");
                     return;
                 }
-
                 employeeName = employeeResponse.data.employee_name;
             } catch (error) {
                 console.error("🚨 Error validating employee code:", error);
@@ -69,10 +68,20 @@ const Dashboard = () => {
             }
         }
 
+        // ✅ If "Ready" is selected and Colour Code is "Pending", prompt user to enter Colour Code
+        if (newStatus === "Ready" && currentColourCode === "Pending") {
+            updatedColourCode = prompt("Enter Colour Code:");
+            if (!updatedColourCode) {
+                alert("❌ Colour Code is required!");
+                return;
+            }
+        }
+
         try {
             await axios.put(`https://queue-backendser.onrender.com/api/orders/${orderId}`, {
                 current_status: newStatus,
-                assigned_employee: employeeName || null
+                assigned_employee: employeeName || null,
+                colour_code: updatedColourCode // ✅ Ensuring colour code is updated
             });
 
             console.log("✅ Order updated successfully!");
@@ -120,7 +129,7 @@ const Dashboard = () => {
                                 <select
                                     className="form-select"
                                     value={order.current_status}
-                                    onChange={(e) => updateStatus(order.id, e.target.value, order.client_contact)}
+                                    onChange={(e) => updateStatus(order.id, e.target.value, order.client_contact, order.colour_code)}
                                 >
                                     {order.current_status && !["Mixing", "Ready"].includes(order.current_status) && (
                                         <option value={order.current_status}>{order.current_status}</option>
