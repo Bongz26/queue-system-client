@@ -24,7 +24,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
 
 
     // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
-    const generateTransactionID = () => 
+    const generateTransactionID = () => {
    //new Date().toISOString().slice(0, 10).replace(/-/g, "");
    // Get date in DDMMYYYY format
     const formatDateDDMMYYYY = () => {
