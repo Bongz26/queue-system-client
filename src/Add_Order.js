@@ -106,10 +106,10 @@ const AddOrder = () => {
                     <option value="250ml">250ml</option>
                     <option value="500ml">500ml</option>
                     <option value="1L">1L</option>
+                    <option value="1.5L">1.5L</option>
                     <option value="2L">2L</option>
+                    <option value="4L">4L</option>
                     <option value="5L">5L</option>
-                    <option value="10L">10L</option>
-                    <option value="20L">20L</option>
                 </select>
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
