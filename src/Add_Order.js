@@ -11,15 +11,14 @@ const calculateETC = (category) => {
 
 const BASE_URL = "https://queue-backendser.onrender.com";
 
-    const AddOrder = () => {
-    const [orderType, setOrderType] = useState("Walk-in");
-    const [transactionID, setTransactionID] = useState("");
-    const [clientName, setClientName] = useState("");
-    const [clientContact, setClientContact] = useState("");
-    const [category, setCategory] = useState("New Mix");
-    const [paintType, setPaintType] = useState("");
-    const [colorCode, setColorCode] = useState("");
-};
+const AddOrder = () => {
+const [orderType, setOrderType] = useState("Walk-in");
+const [transactionID, setTransactionID] = useState("");
+const [clientName, setClientName] = useState("");
+const [clientContact, setClientContact] = useState("");
+const [category, setCategory] = useState("New Mix");
+const [paintType, setPaintType] = useState("");
+const [colorCode, setColorCode] = useState("");
 
 
     // Get date in DDMMYYYY format
