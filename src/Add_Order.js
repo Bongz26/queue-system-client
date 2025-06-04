@@ -175,7 +175,10 @@ const BASE_URL = "https://queue-backendser.onrender.com";
                     <option>Phone Order</option>
                 </select>
                 <label>Transaction ID:</label>
-                <input type="text" className="form-control" value={transactionID} onChange={(e) => setTransactionID(e.target.value)} />
+                <input type="text" className="form-control" value={transactionID} onChange={(e) => setTransactionID(e.target.value)} 
+                    disabled={orderType === "Phone Order"} 
+                    maxLength={4} 
+                    />
 
                 <label>Client Name:</label>
                 <input type="text" className="form-control" value={clientName} onChange={(e) => setClientName(e.target.value)} required />
@@ -185,8 +188,6 @@ const BASE_URL = "https://queue-backendser.onrender.com";
 
                 <label>Category:</label>
                 <select className="form-control" value={category} onChange={(e) => setCategory(e.target.value)
-                    disabled={orderType === "Phone Order"} 
-                    maxLength={4} 
                 }>
                     <option>New Mix</option>
                     <option>Reorder Mix</option>
