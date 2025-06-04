@@ -12,6 +12,7 @@ const calculateETC = (category) => {
 const BASE_URL = "https://queue-backendser.onrender.com";
 
     const AddOrder = () => {
+    const [orderType, setOrderType] = useState("Walk-in");
     const [transactionID, setTransactionID] = useState("");
     const [clientName, setClientName] = useState("");
     const [clientContact, setClientContact] = useState("");
@@ -20,21 +21,25 @@ const BASE_URL = "https://queue-backendser.onrender.com";
     const [colorCode, setColorCode] = useState("");
 
     // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
-    const generateTransactionID = (input) => {
-        const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD format
-        return `${currentDate}-${input.padStart(4, "0")}`;
+    const generateTransactionID = () => {
+       return Math.floor(Math.random() * 10000).toString().padStart(4, "0"); // Generates a 4-digit ID (0000-9999)
     };
+        
+   useEffect(() => {
+        if (orderType === "Phone Order") {
+            setTransactionID(generateTransactionID());
+        } else {
+            setTransactionID(""); // Allow manual entry
+        }
+    }, [orderType]);
 
     // ✅ Validate Contact Number (Only 10 digits)
-    const validateContact = (input) => {
-        return /^\d{10}$/.test(input);
-    };
-
+    const validateContact = (input) => /^\d{10}$/.test(input);
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (transactionID.length !== 4) {
-            alert("❌ Transaction ID must be exactly 4 digits!");
+         if (orderType === "Walk-in" && transactionID.length !== 4) {
+            alert("❌ Transaction ID must be exactly 4 digits for Walk-in orders!");
             return;
         }
 
@@ -54,7 +59,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
 
             const existingOrderCheck = await axios.get(`${BASE_URL}/api/check-duplicate`, {
                 params: { customer_name: clientName, client_contact: clientContact, paint_type: paintType, category },
-                timeout: 20000
+                timeout: 20000,
             });
 
             if (existingOrderCheck.data.exists) {
@@ -68,9 +73,9 @@ const BASE_URL = "https://queue-backendser.onrender.com";
         const adjustedStartTime = new Date(Date.now() + 2 * 60 * 60 * 1000); // ✅ Adjust UTC time by 2 hours
         const formattedStartTime = adjustedStartTime.toLocaleString("en-GB", {
                 timeZone: "Africa/Johannesburg",
-                hour12: false
+                hour12: false,
             }).replace(/\//g, "-").slice(0, -3); 
-        const formattedTransactionID = generateTransactionID(transactionID);
+        const formattedTransactionID = orderType === "Phone Order" ? transactionID : transactionID;
         const estimatedMinutes = calculateETC(category);// ✅ Ensure a number is returned
         const estimatedCompletionTime = new Date(Date.now() + estimatedMinutes * 60 * 1000 + 2 * 60 * 60 * 1000); // ✅ Convert to utc+ 2 timestamp
         const formattedETC = estimatedCompletionTime.toISOString().replace("T", " ").split(".")[0]; // ✅ Fix formatting
@@ -84,7 +89,8 @@ const BASE_URL = "https://queue-backendser.onrender.com";
             category,
             start_time: formattedStartTime,
             estimated_completion: formattedETC, // ✅ Properly formatted timestamp
-            current_status: "Waiting"
+            current_status: "Waiting",
+            order_type: orderType,
         };
 
         console.log("🚀 Debugging order data:", JSON.stringify(newOrder, null, 2)); // ✅ Log before sending
@@ -110,6 +116,7 @@ const BASE_URL = "https://queue-backendser.onrender.com";
             setPaintType("");
             setColorCode("");
             setCategory("New Mix");
+            setOrderType("Walk-in");
 
         } catch (error) {
             console.error("🚨 Error adding order:", error.message);
@@ -162,6 +169,11 @@ const BASE_URL = "https://queue-backendser.onrender.com";
         <div className="container mt-4">
             <h2>Add New Order</h2>
             <form onSubmit={handleSubmit}>
+                <label>Order Type:</label>
+                <select className="form-control" value={orderType} onChange={(e) => setOrderType(e.target.value)}>
+                    <option>Walk-in</option>
+                    <option>Phone Order</option>
+                </select>
                 <label>Transaction ID:</label>
                 <input type="text" className="form-control" value={transactionID} onChange={(e) => setTransactionID(e.target.value)} />
 
@@ -172,7 +184,10 @@ const BASE_URL = "https://queue-backendser.onrender.com";
                 <input type="text" className="form-control" value={clientContact} onChange={(e) => setClientContact(e.target.value)} required />
 
                 <label>Category:</label>
-                <select className="form-control" value={category} onChange={(e) => setCategory(e.target.value)}>
+                <select className="form-control" value={category} onChange={(e) => setCategory(e.target.value)
+                    disabled={orderType === "Phone Order"} 
+                    maxLength={4} 
+                }>
                     <option>New Mix</option>
                     <option>Reorder Mix</option>
                     <option>Colour Code</option>
