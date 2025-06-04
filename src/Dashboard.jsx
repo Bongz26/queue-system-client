@@ -124,7 +124,8 @@ const Dashboard = () => {
                             <td>{order.dynamicETC}</td>
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
-                            <td>{order.assigned_employee || "Unassigned"}</td> {/* ✅ Display assigned employee */}
+                            <td>{order.assigned_employee ? order.assigned_employee : "Unassigned"}</td> {/* ✅ Display assigned employee */}
+                            
                             <td>
                                 <select
                                     className="form-select"
