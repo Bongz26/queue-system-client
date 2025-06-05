@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import "./styles/queueStyles.css"; // ✅ Ensure this file exists
+import "./styles/queueStyles.css";
 import { calculateETC } from "./utils/calculateETC";
 import { sendWhatsAppNotification } from "./utils/sendWhatsAppNotification";
+
+const BASE_URL = "https://queue-backendser.onrender.com";
 
 const Dashboard = () => {
     const [orders, setOrders] = useState([]);
@@ -12,7 +14,7 @@ const Dashboard = () => {
     const fetchOrders = useCallback(async () => {
         try {
             console.log("🔄 Fetching orders...");
-            const response = await axios.get("https://queue-backendser.onrender.com/api/orders");
+            const response = await axios.get(`${BASE_URL}/api/orders`);
 
             const updatedOrders = response.data.map(order => ({
                 ...order,
@@ -29,7 +31,7 @@ const Dashboard = () => {
     const fetchActiveOrdersCount = async () => {
         try {
             console.log("🔍 Fetching active orders count...");
-            const response = await axios.get("https://queue-backendser.onrender.com/api/active-orders-count");
+            const response = await axios.get(`${BASE_URL}/api/active-orders-count`);
             setActiveOrdersCount(response.data.activeOrders);
         } catch (error) {
             console.error("🚨 Error fetching active orders count:", error.message);
@@ -55,12 +57,13 @@ const Dashboard = () => {
             if (!employeeCode) return;
 
             try {
-                const employeeResponse = await axios.get(`https://queue-backendser.onrender.com/api/employees?code=${employeeCode}`);
+                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode.trim()}`);
                 if (!employeeResponse.data || !employeeResponse.data.employee_name) {
                     alert("❌ Invalid Employee Code!");
                     return;
                 }
                 employeeName = employeeResponse.data.employee_name;
+                console.log("✅ Employee found:", employeeName);
             } catch (error) {
                 console.error("🚨 Error validating employee code:", error);
                 alert("❌ Unable to verify employee code!");
@@ -78,10 +81,10 @@ const Dashboard = () => {
         }
 
         try {
-            await axios.put(`https://queue-backendser.onrender.com/api/orders/${orderId}`, {
+            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
                 current_status: newStatus,
                 assigned_employee: employeeName || null,
-                colour_code: updatedColourCode // ✅ Ensuring colour code is updated
+                colour_code: updatedColourCode
             });
 
             console.log("✅ Order updated successfully!");
