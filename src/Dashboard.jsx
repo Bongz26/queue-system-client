@@ -114,16 +114,29 @@ const Dashboard = () => {
                             <td>{order.current_status}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
                             <td>
-                                <select
+    <select
     className="form-select"
     value={order.current_status}
     onChange={(e) => updateStatus(order.transaction_id, e.target.value, order.client_contact)}
 >
-    <option value={order.current_status}>{order.current_status === "Spraying" ? "Testing" : order.current_status}</option>
-    {!["Mixing", "Ready", "Spraying"].includes(order.current_status) && (
+    <option value={order.current_status}>
+        {order.current_status === "Spraying" ? "Testing" : order.current_status}
+    </option>
+    
+    {/* Step 1: Employee MUST select Mixing first */}
+    {order.current_status === "Waiting" && (
+        <option value="Mixing">Mixing</option>
+    )}
+
+    {/* Step 2: After Mixing, allow transition to Spraying */}
+    {order.current_status === "Mixing" && (
+        <option value="Spraying">Spraying</option>
+    )}
+
+    {/* Step 3: After Spraying, allow transition back to Mixing OR Ready */}
+    {order.current_status === "Spraying" && (
         <>
-            <option value="Mixing">Mixing</option>
-            <option value="Spraying">Spraying</option>
+            <option value="Mixing">Back to Mixing</option>
             <option value="Ready">Ready</option>
         </>
     )}
