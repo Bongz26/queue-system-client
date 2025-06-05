@@ -98,9 +98,11 @@ const Dashboard = () => {
                 <thead>
                     <tr>
                         <th>Transaction ID</th>
-                        <th>Paint Type</th>
+                        <th>Col. Code</>
+                        <th>Paint Colour</th>
                         <th>Start Time</th>
                         <th>Status</th>
+                        <th>Customer</th>
                         <th>Assigned Employee</th>
                         <th>Action</th>
                     </tr>
@@ -109,9 +111,11 @@ const Dashboard = () => {
                     {orders.map(order => (
                         <tr key={order.transaction_id} className={getOrderClass(order.category)}>
                             <td>{order.transaction_id}</td>
+                            <td>{order.colour_code}</td>
                             <td>{order.paint_type}</td>
                             <td>{order.start_time}</td>
                             <td>{order.current_status}</td>
+                            <td>{order.customer_name}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
                             <td>
     <select
