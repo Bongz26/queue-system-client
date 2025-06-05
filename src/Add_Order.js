@@ -11,14 +11,14 @@ const AddOrder = () => {
     const [category, setCategory] = useState("New Mix");
     const [paintType, setPaintType] = useState("");
     const [colorCode, setColorCode] = useState("");
-    const [paintQuantity, setPaintQuantity] = useState(""); // ✅ New state variable
+    const [paintQuantity, setPaintQuantity] = useState("");
 
+    // ✅ Generate Transaction ID for Phone Orders
     const generateTransactionID = () => {
         const date = new Date();
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const year = date.getFullYear().toString();
-        const currentDate = `${day}${month}${year}`;
         const randomSequence = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
 
         return `${currentDate}-${randomSequence}`;
@@ -28,15 +28,28 @@ const AddOrder = () => {
         if (orderType === "Phone Order") {
             setTransactionID(generateTransactionID());
         } else {
-            setTransactionID(""); 
+            setTransactionID("");
         }
     }, [orderType]);
+
+    // ✅ Validate Contact Number (10 digits only)
+    const validateContact = (input) => /^\d{10}$/.test(input);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (paintQuantity.trim() === "" || isNaN(paintQuantity) || parseFloat(paintQuantity) <= 0) {
-            alert("❌ Please enter a valid paint quantity!");
+        if (!validateContact(clientContact)) {
+            alert("❌ Contact number must be exactly 10 digits!");
+            return;
+        }
+
+        if (!paintType.trim()) {
+            alert("❌ Paint Type cannot be empty!");
+            return;
+        }
+
+        if (!paintQuantity || isNaN(paintQuantity) || parseFloat(paintQuantity) <= 0) {
+            alert("❌ Please select a valid paint quantity!");
             return;
         }
 
@@ -47,7 +60,7 @@ const AddOrder = () => {
             paint_type: paintType,
             colour_code: category === "New Mix" ? "Pending" : colorCode || "N/A",
             category,
-            paint_quantity: paintQuantity, // ✅ Added paint quantity to order
+            paint_quantity: paintQuantity,
             current_status: "Waiting",
             order_type: orderType,
         };
@@ -55,17 +68,55 @@ const AddOrder = () => {
         try {
             await axios.post(`${BASE_URL}/api/orders`, newOrder);
             alert("✅ Order placed successfully!");
+            printReceipt(newOrder);
+
             setTransactionID("");
             setClientName("");
             setClientContact("");
             setPaintType("");
             setColorCode("");
-            setPaintQuantity(""); // ✅ Reset paint quantity after submission
+            setPaintQuantity("");
             setCategory("New Mix");
             setOrderType("Walk-in");
         } catch (error) {
             alert("❌ Error adding order!");
         }
+    };
+
+    // ✅ Receipt Printing
+    const printReceipt = (order) => {
+        const printWindow = window.open("", "_blank", "width=600,height=400");
+        if (!printWindow) {
+            alert("❌ Printing blocked! Enable pop-ups in your browser.");
+            return;
+        }
+
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Order Receipt</title>
+                <style>
+                    body { font-size: 14px; }
+                    h2 { font-size: 16px; font-weight: bold; }
+                    p { margin: 6px 0; }
+                </style>
+            </head>
+            <body>
+                <h2>PAINT QUEUE SYSTEM - ORDER RECEIPT</h2>
+                <p><strong>Order No:</strong> #${order.transaction_id}</p>
+                <p><strong>Client Name:</strong> ${order.customer_name}</p>
+                <p><strong>Contact:</strong> ${order.client_contact}</p>
+                <p><strong>Paint Type:</strong> ${order.paint_type}</p>
+                <p><strong>Paint Quantity:</strong> ${order.paint_quantity}</p>
+                <p><strong>Category:</strong> ${order.category}</p>
+                <p><strong>Order Type:</strong> ${order.order_type}</p>
+            </body>
+            </html>
+        `);
+
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
     };
 
     return (
@@ -79,7 +130,7 @@ const AddOrder = () => {
                 </select>
 
                 <label>Transaction ID:</label>
-                <input type="text" className="form-control" value={transactionID} disabled={orderType === "Phone Order"} />
+                <input type="text" className="form-control" value={transactionID} disabled />
 
                 <label>Client Name:</label>
                 <input type="text" className="form-control" value={clientName} onChange={(e) => setClientName(e.target.value)} required />
@@ -100,8 +151,17 @@ const AddOrder = () => {
                 <label>Colour Code:</label>
                 <input type="text" className="form-control" value={colorCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
 
-                <label>Paint Quantity (Liters):</label>
-                <input type="number" className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required />
+                <label>Paint Quantity:</label>
+                <select className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required>
+                    <option value="">Select Quantity</option>
+                    <option value="250ml">250ml</option>
+                    <option value="500ml">500ml</option>
+                    <option value="1L">1L</option>
+                    <option value="2L">2L</option>
+                    <option value="4L">4L</option>
+                    <option value="5L">5L</option>
+                    <option value="10L">10L</option>
+                </select>
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
             </form>
