@@ -13,34 +13,25 @@ const AddOrder = () => {
     const [colorCode, setColorCode] = useState("");
     const [paintQuantity, setPaintQuantity] = useState("");
 
-    
-   //new Date().toISOString().slice(0, 10).replace(/-/g, "");
-   // Get date in DDMMYYYY format
-    // Get date in DDMMYYYY format
-    const formatDateDDMMYYYY = () => {
-    //new Date().toISOString().slice(0, 10).replace(/-/g, "");
-    const date = new Date();
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear().toString();
-    return `${day}${month}${year}`;
-};    
+    // ✅ Generate Date in DDMMYYYY format
+    const formatDateDDMMYYYY = () => { 
+        const date = new Date();
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear().toString();
+        return `${day}${month}${year}`;
+    };
 
-    // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
+    // ✅ Generate Transaction ID (DDMMYYYY + 4-digit random sequence)
     const generateTransactionID = () => {
-    const currentDate = formatDateDDMMYYYY();
-    // Generate random sequence from 0000 to 9999 (use sequential logic if backend tracks numbers)
-    const randomSequence = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
-
-    return `${currentDate}-${randomSequence}`;
-};
+        const currentDate = formatDateDDMMYYYY();
+        const randomSequence = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+        return `${currentDate}-${randomSequence}`;
+    };
 
     useEffect(() => {
-        if (orderType === "Phone Order") {
-            setTransactionID(generateTransactionID());
-        } else {
-            setTransactionID("");
-        }
+        // ✅ Both Walk-in and Phone Order should generate Transaction ID
+        setTransactionID(generateTransactionID());
     }, [orderType]);
 
     // ✅ Validate Contact Number (10 digits only)
@@ -59,7 +50,7 @@ const AddOrder = () => {
             return;
         }
 
-        if (!paintQuantity || isNaN(paintQuantity) || parseFloat(paintQuantity) <= 0) {
+        if (!paintQuantity || paintQuantity.trim() === "" || !["250ml", "500ml", "1L", "2L", "4L", "5L", "10L"].includes(paintQuantity)) {
             alert("❌ Please select a valid paint quantity!");
             return;
         }
@@ -76,12 +67,14 @@ const AddOrder = () => {
             order_type: orderType,
         };
 
+        console.log("🚀 Sending order data:", newOrder);
+
         try {
             await axios.post(`${BASE_URL}/api/orders`, newOrder);
             alert("✅ Order placed successfully!");
             printReceipt(newOrder);
 
-            setTransactionID("");
+            setTransactionID(generateTransactionID()); // ✅ Ensure new order gets new Transaction ID
             setClientName("");
             setClientContact("");
             setPaintType("");
@@ -96,6 +89,7 @@ const AddOrder = () => {
 
     // ✅ Receipt Printing
     const printReceipt = (order) => {
+        console.log("🖨️ Preparing receipt for order:", order);
         const printWindow = window.open("", "_blank", "width=600,height=400");
         if (!printWindow) {
             alert("❌ Printing blocked! Enable pop-ups in your browser.");
