@@ -13,8 +13,7 @@ const AddOrder = () => {
     const [colorCode, setColorCode] = useState("");
     const [paintQuantity, setPaintQuantity] = useState("");
 
-    // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
-    const generateTransactionID = () => {
+    
    //new Date().toISOString().slice(0, 10).replace(/-/g, "");
    // Get date in DDMMYYYY format
     // Get date in DDMMYYYY format
@@ -26,7 +25,6 @@ const AddOrder = () => {
     const year = date.getFullYear().toString();
     return `${day}${month}${year}`;
 };    
-    };    
 
     // ✅ Generate Transaction ID (YYYYMMDD + 4 digits)
     const generateTransactionID = () => {
