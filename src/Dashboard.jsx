@@ -4,10 +4,17 @@ import "./styles/queueStyles.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
 
+// 🔧 ETC category-based time estimates
+const ETC_TIMES = {
+    "New Mix": 30,
+    "Reorder Mix": 20,
+    "Colour Code": 10,
+};
+
 const getOrderClass = (category) => {
-    if (category === "New Mix") return "urgent";  // 🔴 Restored styling
-    if (category === "Reorder Mix") return "warning"; // 🟠 Restored styling
-    if (category === "Colour Code") return "standard"; // 🔵 Restored styling
+    if (category === "New Mix") return "urgent";
+    if (category === "Reorder Mix") return "warning";
+    if (category === "Colour Code") return "standard";
     return "";
 };
 
@@ -17,7 +24,6 @@ const Dashboard = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // ✅ Fetch active orders excluding "Ready" status
     const fetchOrders = useCallback(async () => {
         setLoading(true);
         setError("");
@@ -25,11 +31,10 @@ const Dashboard = () => {
             const response = await axios.get(`${BASE_URL}/api/orders`);
             console.log("📌 Orders from API:", response.data);
 
-            setOrders(response.data);
+            const activeOrders = response.data.filter(order => order.current_status !== "Ready");
 
-            // ✅ Count only orders NOT in "Ready" status
-            const activeCount = response.data.filter(order => order.current_status !== "Ready").length;
-            setActiveOrdersCount(activeCount);
+            setOrders(response.data);
+            setActiveOrdersCount(activeOrders.length);
         } catch (error) {
             setError("Error fetching orders.");
         } finally {
@@ -41,8 +46,7 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-    // ✅ Restore Employee Authentication logic
-    const updateStatus = async (orderId, newStatus, clientNumber) => {
+    const updateStatus = async (orderId, newStatus) => {
         let employeeCode = null;
         let employeeName = null;
 
@@ -70,14 +74,29 @@ const Dashboard = () => {
             });
 
             console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
-
             setTimeout(() => {
-                fetchOrders(); // Ensure UI refreshes properly after update
+                fetchOrders();
             }, 500);
         } catch (error) {
             setError("Error updating order status.");
         }
     };
+
+    // 🔧 ETC calculation: sum of ETCs of all earlier non-ready orders
+    const calculateETCPerOrder = () => {
+        let totalTime = 0;
+        return orders.map(order => {
+            if (order.current_status === "Ready") {
+                return { ...order, etc: 0 };
+            }
+            const orderETC = ETC_TIMES[order.category] || 0;
+            const etcValue = totalTime;
+            totalTime += orderETC;
+            return { ...order, etc: etcValue };
+        });
+    };
+
+    const ordersWithETC = calculateETCPerOrder();
 
     return (
         <div className="container mt-4">
@@ -97,12 +116,13 @@ const Dashboard = () => {
                         <th>Status</th>
                         <th>Customer</th>
                         <th>Assigned Employee</th>
+                        <th>ETC (min)</th> {/* 🔧 Added ETC column */}
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {orders.map(order => (
-                        <tr key={order.transaction_id} className={getOrderClass(order.category)}> {/* 🔥 Restored category-based styling */}
+                    {ordersWithETC.map(order => (
+                        <tr key={order.transaction_id} className={getOrderClass(order.category)}>
                             <td>{order.transaction_id}</td>
                             <td>{order.colour_code}</td>
                             <td>{order.paint_type}</td>
@@ -110,11 +130,12 @@ const Dashboard = () => {
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
+                            <td>{order.etc} min</td> {/* 🔧 Display ETC */}
                             <td>
                                 <select
                                     className="form-select"
                                     value={order.current_status}
-                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value, order.client_contact)}
+                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value)}
                                 >
                                     <option value={order.current_status}>{order.current_status}</option>
                                     {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
