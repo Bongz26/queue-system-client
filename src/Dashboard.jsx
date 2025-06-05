@@ -141,4 +141,12 @@ const Dashboard = () => {
     );
 };
 
+
+/ ✅ Restored priority-based order styling
+const getOrderClass = (category) => {
+    if (category === "New Mix") return "urgent";
+    if (category === "Reorder Mix") return "warning";
+    if (category === "Colour Code") return "standard";
+    return "";
+};
 export default Dashboard;
