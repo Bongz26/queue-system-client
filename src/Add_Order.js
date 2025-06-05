@@ -4,7 +4,7 @@ import axios from "axios";
 const BASE_URL = "https://queue-backendser.onrender.com";
 
 const AddOrder = () => {
-    const [orderType, setOrderType] = useState("Walk-in");
+    const [orderType, setOrderType] = useState("Paid");
     const [transactionID, setTransactionID] = useState("");
     const [clientName, setClientName] = useState("");
     const [clientContact, setClientContact] = useState("");
@@ -25,7 +25,7 @@ const AddOrder = () => {
 
     // ✅ Handle Transaction ID for Walk-in orders (User manually enters last 4 digits)
     const handleTransactionIDChange = (e) => {
-        if (orderType === "Walk-in") {
+        if (orderType === "Paid") {
             const userDigits = e.target.value.replace(/\D/g, "").slice(-4); // Ensure only 4 digits
             setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
         }
@@ -64,7 +64,7 @@ const AddOrder = () => {
         }
 
         if (transactionID.length !== 13) { // ✅ Ensures YYYYMMDD-XXXX (Total 13 characters)
-            alert("❌ Walk-in orders must have a 4-digit Transaction ID!");
+            alert("❌ Paid orders must have a 4-digit Transaction ID!");
             return;
         }
 
