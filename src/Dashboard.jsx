@@ -15,6 +15,8 @@ const Dashboard = () => {
         try {
             console.log("🔄 Fetching orders...");
             const response = await axios.get(`${BASE_URL}/api/orders`);
+            
+            console.log("📌 Orders received from backend:", response.data);
 
             const updatedOrders = response.data.map(order => ({
                 ...order,
@@ -58,6 +60,8 @@ const Dashboard = () => {
 
             try {
                 const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode.trim()}`);
+                console.log("📌 Employee API Response:", employeeResponse.data);
+
                 if (!employeeResponse.data || !employeeResponse.data.employee_name) {
                     alert("❌ Invalid Employee Code!");
                     return;
@@ -79,6 +83,8 @@ const Dashboard = () => {
                 return;
             }
         }
+
+        console.log("🛠 Sending update request:", { orderId, newStatus, employeeName, updatedColourCode });
 
         try {
             await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
@@ -109,39 +115,23 @@ const Dashboard = () => {
                         <th>Transaction ID</th>
                         <th>Colour Code</th>
                         <th>Colour</th>
-                        <th>Start Time</th>
-                        <th>ETC</th>
                         <th>Status</th>
                         <th>Customer</th>
-                        <th>Assigned Employee</th> {/* ✅ New column */}
+                        <th>Assigned Employee</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {orders.map(order => (
-                        <tr key={order.id} className={getOrderClass(order.category)}>
+                        <tr key={order.transaction_id}>
                             <td>{order.transaction_id}</td>
-                            <td>{order.colour_code !== undefined ? order.colour_code : "N/A"}</td>
+                            <td>{order.colour_code || "N/A"}</td>
                             <td>{order.paint_type}</td>
-                            <td>{order.start_time}</td>
-                            <td>{order.dynamicETC}</td>
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
-                            <td>{order.assigned_employee ? order.assigned_employee : "Unassigned"}</td> {/* ✅ Display assigned employee */}
-                            
+                            <td>{order.assigned_employee || "Unassigned"}</td>
                             <td>
-                                <select
-                                    className="form-select"
-                                    value={order.current_status}
-                                    onChange={(e) => updateStatus(order.id, e.target.value, order.client_contact, order.colour_code)}
-                                >
-                                    {order.current_status && !["Mixing", "Ready"].includes(order.current_status) && (
-                                        <option value={order.current_status}>{order.current_status}</option>
-                                    )}
-                                    <option value="Mixing">Mixing</option>
-                                    <option value="Testing">Spraying</option>
-                                    <option value="Ready">Ready</option>
-                                </select>
+                                <button onClick={() => updateStatus(order.transaction_id, "Mixing", order.client_contact, order.colour_code)}>Mix</button>
                             </td>
                         </tr>
                     ))}
@@ -149,14 +139,6 @@ const Dashboard = () => {
             </table>
         </div>
     );
-};
-
-// ✅ Color coding for priority-based orders
-const getOrderClass = (category) => {
-    if (category === "New Mix") return "urgent";
-    if (category === "Reorder Mix") return "warning";
-    if (category === "Colour Code") return "standard";
-    return "";
 };
 
 export default Dashboard;
