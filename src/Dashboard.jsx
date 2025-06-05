@@ -44,7 +44,7 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-    // ✅ Ensure "Mixing" is always displayed
+    // ✅ Update order status with assigned employee logic
     const updateStatus = async (orderId, newStatus, clientNumber) => {
         let employeeCode = null;
         let employeeName = null;
@@ -109,6 +109,21 @@ const Dashboard = () => {
                             <td>{order.start_time}</td>
                             <td>{order.current_status}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
+                            <td>
+                                <select
+                                    className="form-select"
+                                    value={order.current_status}
+                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value, order.client_contact)}
+                                >
+                                    <option value={order.current_status}>{order.current_status}</option>
+                                    {!["Mixing", "Ready"].includes(order.current_status) && (
+                                        <>
+                                            <option value="Mixing">Mixing</option>
+                                            <option value="Ready">Ready</option>
+                                        </>
+                                    )}
+                                </select>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
