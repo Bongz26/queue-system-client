@@ -35,8 +35,8 @@ const AddOrder = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!paintQuantity) {
-            alert("❌ Please select a valid paint quantity!");
+        if (paintQuantity.trim() === "" || isNaN(paintQuantity) || parseFloat(paintQuantity) <= 0) {
+            alert("❌ Please enter a valid paint quantity!");
             return;
         }
 
@@ -100,17 +100,8 @@ const AddOrder = () => {
                 <label>Colour Code:</label>
                 <input type="text" className="form-control" value={colorCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
 
-                <label>Paint Quantity:</label>
-                <select className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required>
-                    <option value="">Select Quantity</option>
-                    <option value="250ml">250ml</option>
-                    <option value="500ml">500ml</option>
-                    <option value="1L">1L</option>
-                    <option value="1.5L">1.5L</option>
-                    <option value="2L">2L</option>
-                    <option value="4L">4L</option>
-                    <option value="5L">5L</option>
-                </select>
+                <label>Paint Quantity (Liters):</label>
+                <input type="number" className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required />
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
             </form>
