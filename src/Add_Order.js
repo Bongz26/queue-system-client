@@ -140,7 +140,7 @@ const AddOrder = () => {
             <form onSubmit={handleSubmit}>
                 <label>Order Type:</label>
                 <select className="form-control" value={orderType} onChange={(e) => setOrderType(e.target.value)}>
-                    <option>Walk-in</option>
+                    <option>Paid</option>
                     <option>Phone Order</option>
                 </select>
 
