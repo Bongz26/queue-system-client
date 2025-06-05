@@ -22,16 +22,17 @@ const AddOrder = () => {
         return `${day}${month}${year}`;
     };
 
-    // ✅ Generate Transaction ID (DDMMYYYY + 4-digit random sequence)
-    const generateTransactionID = () => {
-        const currentDate = formatDateDDMMYYYY();
-        const randomSequence = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
-        return `${currentDate}-${randomSequence}`;
+    // ✅ Generate Transaction ID (DDMMYYYY + user-entered 4-digit number for Walk-in)
+    const handleTransactionIDChange = (e) => {
+        setTransactionID(formatDateDDMMYYYY() + "-" + e.target.value);
     };
 
     useEffect(() => {
-        // ✅ Both Walk-in and Phone Order should generate Transaction ID
-        setTransactionID(generateTransactionID());
+        if (orderType === "Phone Order") {
+            setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(Math.random() * 10000).toString().padStart(4, "0"));
+        } else {
+            setTransactionID(""); // ✅ Keep empty for Walk-in users to manually enter the last 4 digits
+        }
     }, [orderType]);
 
     // ✅ Validate Contact Number (10 digits only)
@@ -55,6 +56,11 @@ const AddOrder = () => {
             return;
         }
 
+        if (transactionID.length !== 13) {
+            alert("❌ Walk-in orders must have a 4-digit Transaction ID!");
+            return;
+        }
+
         const newOrder = {
             transaction_id: transactionID,
             customer_name: clientName,
@@ -70,11 +76,12 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-            await axios.post(`${BASE_URL}/api/orders`, newOrder);
+            const response = await axios.post(`${BASE_URL}/api/orders`, newOrder);
+            console.log("✅ Order added successfully:", response.data);
             alert("✅ Order placed successfully!");
             printReceipt(newOrder);
 
-            setTransactionID(generateTransactionID()); // ✅ Ensure new order gets new Transaction ID
+            setTransactionID(""); // ✅ Reset for the next Walk-in order
             setClientName("");
             setClientContact("");
             setPaintType("");
@@ -83,7 +90,8 @@ const AddOrder = () => {
             setCategory("New Mix");
             setOrderType("Walk-in");
         } catch (error) {
-            alert("❌ Error adding order!");
+            console.error("🚨 Error adding order:", error.message);
+            alert("❌ Error adding order! Please check your API connection.");
         }
     };
 
@@ -135,7 +143,13 @@ const AddOrder = () => {
                 </select>
 
                 <label>Transaction ID:</label>
-                <input type="text" className="form-control" value={transactionID} disabled />
+                <input 
+                    type="text"
+                    className="form-control"
+                    value={transactionID}
+                    onChange={handleTransactionIDChange}
+                    disabled={orderType === "Phone Order"} 
+                />
 
                 <label>Client Name:</label>
                 <input type="text" className="form-control" value={clientName} onChange={(e) => setClientName(e.target.value)} required />
