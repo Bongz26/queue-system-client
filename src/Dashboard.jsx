@@ -45,42 +45,46 @@ const Dashboard = () => {
     }, [fetchOrders]);
 
     // ✅ Update order status with assigned employee logic
-    const updateStatus = async (orderId, newStatus, clientNumber) => {
-        let employeeCode = null;
-        let employeeName = null;
+   const updateStatus = async (orderId, newStatus, clientNumber) => {
+    let employeeCode = null;
+    let employeeName = null;
 
-        if (newStatus === "Mixing") {
-            employeeCode = prompt("Enter Employee Code:");
-            if (!employeeCode) return;
-
-            try {
-                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-                if (!employeeResponse.data || !employeeResponse.data.employee_name) {
-                    alert("❌ Invalid Employee Code!");
-                    return;
-                }
-                employeeName = employeeResponse.data.employee_name;
-            } catch (error) {
-                alert("❌ Unable to verify employee code!");
-                return;
-            }
-        }
+    if (["Mixing", "Spraying"].includes(newStatus)) {
+        employeeCode = prompt("Enter Employee Code:");
+        if (!employeeCode) return;
 
         try {
-            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
-                current_status: newStatus,
-                assigned_employee: employeeName || null
-            });
-
-            fetchOrders();
-
-            if (newStatus === "Ready") {
-                sendWhatsAppNotification(clientNumber, orderId, calculateETC(newStatus, activeOrdersCount));
+            const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+            if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+                alert("❌ Invalid Employee Code!");
+                return;
             }
+            employeeName = employeeResponse.data.employee_name;
         } catch (error) {
-            setError("Error updating order status.");
+            alert("❌ Unable to verify employee code!");
+            return;
         }
-    };
+    }
+
+    try {
+        await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+            current_status: newStatus,
+            assigned_employee: employeeName || null
+        });
+
+        console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
+
+        setTimeout(() => {
+            fetchOrders(); // 🔄 Ensures UI refreshes properly after update
+        }, 500);
+
+        if (newStatus === "Ready") {
+            sendWhatsAppNotification(clientNumber, orderId, calculateETC(newStatus, activeOrdersCount));
+        }
+    } catch (error) {
+        setError("Error updating order status.");
+    }
+};
 
     return (
         <div className="container mt-4">
