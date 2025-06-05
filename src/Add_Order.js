@@ -23,17 +23,19 @@ const AddOrder = () => {
         return `${day}${month}${year}`;
     };
 
-    // ✅ Handle Transaction ID for Walk-in orders (User enters last 4 digits manually)
+    // ✅ Handle Transaction ID for Walk-in orders (User manually enters last 4 digits)
     const handleTransactionIDChange = (e) => {
-        const userDigits = e.target.value.replace(/\D/g, "").padStart(4, "0"); // Ensure it's only numbers
-        setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
+        if (orderType === "Walk-in") {
+            const userDigits = e.target.value.replace(/\D/g, "").slice(-4); // Ensure only 4 digits
+            setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
+        }
     };
 
     useEffect(() => {
         if (orderType === "Phone Order") {
             setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(1000 + Math.random() * 9000).toString());
         } else {
-            setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Walk-in allows manual entry of 4 digits
+            setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Allows user to enter last 4 digits manually
         }
 
         // ✅ Automatically set `start_time`
@@ -122,7 +124,7 @@ const AddOrder = () => {
         Paint Type: ${order.paint_type}
         Color Code: ${order.colour_code} ${order.colour_code === "Pending" ? "(C.code to be assigned)" : ""}
         Category: ${order.category}
-        
+        ETC: ${calculateETC(order.category, 0)} mins  
         TrackID: TRK-${order.transaction_id}  
         ----------------------------------------
         `;
@@ -183,10 +185,6 @@ const AddOrder = () => {
                     <option value="250ml">250ml</option>
                     <option value="500ml">500ml</option>
                     <option value="1L">1L</option>
-                    <option value="2L">2L</option>
-                    <option value="4L">4L</option>
-                    <option value="5L">5L</option>
-                    <option value="10L">10L</option>
                 </select>
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
