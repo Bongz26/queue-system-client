@@ -82,6 +82,19 @@ const Dashboard = () => {
         }
     };
 
+    const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const month = monthNames[date.getMonth()];
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
+
     // 🔧 ETC calculation: sum of ETCs of all earlier non-ready orders
     const calculateETCPerOrder = () => {
         let totalTime = 0;
@@ -126,7 +139,7 @@ const Dashboard = () => {
                             <td>{order.transaction_id}</td>
                             <td>{order.colour_code}</td>
                             <td>{order.paint_type}</td>
-                            <td>{order.start_time}</td>
+                            <td>{formatDateTime(order.start_time)}</td>
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
