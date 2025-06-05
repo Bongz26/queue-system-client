@@ -122,7 +122,7 @@ const AddOrder = () => {
         Paint Type: ${order.paint_type}
         Color Code: ${order.colour_code} ${order.colour_code === "Pending" ? "(C.code to be assigned)" : ""}
         Category: ${order.category}
-        ETC: ${calculateETC(order.category, 0)} mins  
+        
         TrackID: TRK-${order.transaction_id}  
         ----------------------------------------
         `;
