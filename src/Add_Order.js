@@ -25,7 +25,7 @@ const AddOrder = () => {
 
     // ✅ Handle Transaction ID for Walk-in orders (User enters last 4 digits manually)
     const handleTransactionIDChange = (e) => {
-        const userDigits = e.target.value.replace(/\D/g, "").padStart(4, "0"); // Ensures it's only numbers
+        const userDigits = e.target.value.replace(/\D/g, "").padStart(4, "0"); // Ensure it's only numbers
         setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
     };
 
@@ -33,7 +33,7 @@ const AddOrder = () => {
         if (orderType === "Phone Order") {
             setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(1000 + Math.random() * 9000).toString());
         } else {
-            setTransactionID(""); // ✅ Walk-in allows manual entry of 4 digits
+            setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Walk-in allows manual entry of 4 digits
         }
 
         // ✅ Automatically set `start_time`
@@ -88,7 +88,7 @@ const AddOrder = () => {
             printReceipt(newOrder);
 
             // ✅ Reset Fields
-            setTransactionID("");
+            setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Reset for next Walk-in order
             setClientName("");
             setClientContact("");
             setPaintType("");
@@ -103,7 +103,7 @@ const AddOrder = () => {
         }
     };
 
-    // ✅ Receipt Printing
+    // ✅ Receipt Printing Function
     const printReceipt = (order) => {
         console.log("🖨️ Preparing receipt for order:", order);
         const printWindow = window.open("", "_blank", "width=600,height=400");
@@ -112,33 +112,23 @@ const AddOrder = () => {
             return;
         }
 
-        printWindow.document.write(`
-            <html>
-            <head>
-                <title>Order Receipt</title>
-                <style>
-                    body { font-size: 14px; }
-                    h2 { font-size: 16px; font-weight: bold; }
-                    p { margin: 6px 0; }
-                </style>
-            </head>
-            <body>
-                <h2>PAINT QUEUE SYSTEM - ORDER RECEIPT</h2>
-                <p><strong>Order No:</strong> #${order.transaction_id}</p>
-                <p><strong>Client Name:</strong> ${order.customer_name}</p>
-                <p><strong>Contact:</strong> ${order.client_contact}</p>
-                <p><strong>Paint Type:</strong> ${order.paint_type}</p>
-                <p><strong>Paint Quantity:</strong> ${order.paint_quantity}</p>
-                <p><strong>Colour Code:</strong> ${order.colour_code}</p>
-                <p><strong>Category:</strong> ${order.category}</p>
-                <p><strong>Order Type:</strong> ${order.order_type}</p>
-                <p><strong>Start Time:</strong> ${order.start_time}</p>
-            </body>
-            </html>
-        `);
+        const receiptContent = `
+        ----------------------------------------
+               PAINT QUEUE SYSTEM - RECEIPT
+        ----------------------------------------
+        Order No.: #${order.transaction_id}
+        Client Name: ${order.customer_name}
+        Contact: ${order.client_contact}
+        Paint Type: ${order.paint_type}
+        Color Code: ${order.colour_code} ${order.colour_code === "Pending" ? "(C.code to be assigned)" : ""}
+        Category: ${order.category}
+        ETC: ${calculateETC(order.category, 0)} mins  
+        TrackID: TRK-${order.transaction_id}  
+        ----------------------------------------
+        `;
 
+        printWindow.document.write(`<pre>${receiptContent}</pre>`);
         printWindow.document.close();
-        printWindow.focus();
         printWindow.print();
     };
 
@@ -168,11 +158,24 @@ const AddOrder = () => {
                 <label>Client Contact:</label>
                 <input type="text" className="form-control" value={clientContact} onChange={(e) => setClientContact(e.target.value)} required />
 
+                <label>Category:</label>
+                <select className="form-control" value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <option>New Mix</option>
+                    <option>Reorder Mix</option>
+                    <option>Colour Code</option>
+                </select>
+
                 <label>Paint Colour:</label>
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
                 <label>Colour Code:</label>
-                <input type="text" className="form-control" value={colorCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    value={colorCode} 
+                    onChange={(e) => setColorCode(e.target.value)} 
+                    disabled={category === "New Mix"} 
+                />
 
                 <label>Paint Quantity:</label>
                 <select className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required>
