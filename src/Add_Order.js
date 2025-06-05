@@ -14,7 +14,7 @@ const AddOrder = () => {
     const [paintQuantity, setPaintQuantity] = useState("");
     const [startTime, setStartTime] = useState("");
 
-    // ✅ Generate Date in DDMMYYYY format (for Transaction ID prefix)
+    // ✅ Generate Date in DDMMYYYY format (Transaction ID prefix)
     const formatDateDDMMYYYY = () => { 
         const date = new Date();
         const day = date.getDate().toString().padStart(2, "0");
@@ -23,20 +23,20 @@ const AddOrder = () => {
         return `${day}${month}${year}`;
     };
 
-    // ✅ Handle Transaction ID for Walk-in orders (User manually enters last 4 digits)
+    // ✅ Handle Transaction ID for Walk-in orders (User enters last 4 digits manually)
     const handleTransactionIDChange = (e) => {
-        const userDigits = e.target.value.padStart(4, "0"); // Ensure it's 4 digits
+        const userDigits = e.target.value.replace(/\D/g, "").padStart(4, "0"); // Ensures it's only numbers
         setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
     };
 
     useEffect(() => {
         if (orderType === "Phone Order") {
-            setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(Math.random() * 10000).toString().padStart(4, "0"));
+            setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(1000 + Math.random() * 9000).toString());
         } else {
             setTransactionID(""); // ✅ Walk-in allows manual entry of 4 digits
         }
 
-        // ✅ Automatically set `start_time` at the current time
+        // ✅ Automatically set `start_time`
         setStartTime(new Date().toISOString());
     }, [orderType]);
 
@@ -56,7 +56,7 @@ const AddOrder = () => {
             return;
         }
 
-        if (!paintQuantity || paintQuantity.trim() === "" || !["250ml", "500ml", "1L", "2L", "4L", "5L", "10L"].includes(paintQuantity)) {
+        if (!paintQuantity || !["250ml", "500ml", "1L", "2L", "4L", "5L", "10L"].includes(paintQuantity)) {
             alert("❌ Please select a valid paint quantity!");
             return;
         }
@@ -82,11 +82,12 @@ const AddOrder = () => {
         console.log("🚀 Sending order data:", newOrder);
 
         try {
-            const response = await axios.post(`${BASE_URL}/api/orders`, newOrder);
-            console.log("✅ Order added successfully:", response.data);
+            await axios.post(`${BASE_URL}/api/orders`, newOrder);
+            console.log("✅ Order added successfully:", newOrder);
             alert("✅ Order placed successfully!");
             printReceipt(newOrder);
 
+            // ✅ Reset Fields
             setTransactionID("");
             setClientName("");
             setClientContact("");
@@ -95,7 +96,7 @@ const AddOrder = () => {
             setPaintQuantity("");
             setCategory("New Mix");
             setOrderType("Walk-in");
-            setStartTime(new Date().toISOString()); // ✅ Reset start time for next order
+            setStartTime(new Date().toISOString());
         } catch (error) {
             console.error("🚨 Error adding order:", error.message);
             alert("❌ Error adding order! Please check your API connection.");
@@ -128,9 +129,10 @@ const AddOrder = () => {
                 <p><strong>Contact:</strong> ${order.client_contact}</p>
                 <p><strong>Paint Type:</strong> ${order.paint_type}</p>
                 <p><strong>Paint Quantity:</strong> ${order.paint_quantity}</p>
+                <p><strong>Colour Code:</strong> ${order.colour_code}</p>
                 <p><strong>Category:</strong> ${order.category}</p>
                 <p><strong>Order Type:</strong> ${order.order_type}</p>
-                <p><strong>Start Time:</strong> ${order.start_time}</p> <!-- ✅ Ensuring Start Time appears on the receipt -->
+                <p><strong>Start Time:</strong> ${order.start_time}</p>
             </body>
             </html>
         `);
@@ -157,6 +159,7 @@ const AddOrder = () => {
                     value={transactionID}
                     onChange={handleTransactionIDChange}
                     disabled={orderType === "Phone Order"} 
+                    placeholder="Enter 4-digit ID for Walk-in"
                 />
 
                 <label>Client Name:</label>
@@ -168,8 +171,20 @@ const AddOrder = () => {
                 <label>Paint Colour:</label>
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
-                <label>Start Time:</label>
-                <input type="text" className="form-control" value={startTime} disabled />
+                <label>Colour Code:</label>
+                <input type="text" className="form-control" value={colorCode} onChange={(e) => setColorCode(e.target.value)} disabled={category === "New Mix"} />
+
+                <label>Paint Quantity:</label>
+                <select className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required>
+                    <option value="">Select Quantity</option>
+                    <option value="250ml">250ml</option>
+                    <option value="500ml">500ml</option>
+                    <option value="1L">1L</option>
+                    <option value="2L">2L</option>
+                    <option value="4L">4L</option>
+                    <option value="5L">5L</option>
+                    <option value="10L">10L</option>
+                </select>
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
             </form>
