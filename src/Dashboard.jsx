@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./styles/queueStyles.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
+
+const getOrderClass = (category) => {
+    if (category === "New Mix") return "urgent";  // 🔴 Restored styling
+    if (category === "Reorder Mix") return "warning"; // 🟠 Restored styling
+    if (category === "Colour Code") return "standard"; // 🔵 Restored styling
+    return "";
+};
 
 const Dashboard = () => {
     const [orders, setOrders] = useState([]);
@@ -11,11 +18,11 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false);
 
     // ✅ Fetch active orders excluding "Ready" status
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         setLoading(true);
         setError("");
         try {
-            const response = await axios.get(`${BASE_URL}/api/orders/active`);
+            const response = await axios.get(`${BASE_URL}/api/orders`);
             console.log("📌 Orders from API:", response.data);
 
             setOrders(response.data);
@@ -28,17 +35,45 @@ const Dashboard = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchOrders();
-    }, []);
+    }, [fetchOrders]);
 
-    // ✅ Update order status
-    const updateStatus = async (orderId, newStatus) => {
+    // ✅ Restore Employee Authentication logic
+    const updateStatus = async (orderId, newStatus, clientNumber) => {
+        let employeeCode = null;
+        let employeeName = null;
+
+        if (["Mixing", "Spraying"].includes(newStatus)) {
+            employeeCode = prompt("Enter Employee Code:");
+            if (!employeeCode) return;
+
+            try {
+                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+                if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+                    alert("❌ Invalid Employee Code!");
+                    return;
+                }
+                employeeName = employeeResponse.data.employee_name;
+            } catch (error) {
+                alert("❌ Unable to verify employee code!");
+                return;
+            }
+        }
+
         try {
-            await axios.put(`${BASE_URL}/api/orders/${orderId}`, { current_status: newStatus });
-            fetchOrders(); // Refresh orders after update
+            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+                current_status: newStatus,
+                assigned_employee: employeeName || null
+            });
+
+            console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
+
+            setTimeout(() => {
+                fetchOrders(); // Ensure UI refreshes properly after update
+            }, 500);
         } catch (error) {
             setError("Error updating order status.");
         }
@@ -67,7 +102,7 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                     {orders.map(order => (
-                        <tr key={order.transaction_id}>
+                        <tr key={order.transaction_id} className={getOrderClass(order.category)}> {/* 🔥 Restored category-based styling */}
                             <td>{order.transaction_id}</td>
                             <td>{order.colour_code}</td>
                             <td>{order.paint_type}</td>
@@ -79,7 +114,7 @@ const Dashboard = () => {
                                 <select
                                     className="form-select"
                                     value={order.current_status}
-                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value)}
+                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value, order.client_contact)}
                                 >
                                     <option value={order.current_status}>{order.current_status}</option>
                                     {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
