@@ -12,6 +12,7 @@ const AddOrder = () => {
     const [paintType, setPaintType] = useState("");
     const [colorCode, setColorCode] = useState("");
     const [paintQuantity, setPaintQuantity] = useState("");
+    const [startTime, setStartTime] = useState("");
 
     // ✅ Generate Date in DDMMYYYY format (for Transaction ID prefix)
     const formatDateDDMMYYYY = () => { 
@@ -34,6 +35,9 @@ const AddOrder = () => {
         } else {
             setTransactionID(""); // ✅ Walk-in allows manual entry of 4 digits
         }
+
+        // ✅ Automatically set `start_time` at the current time
+        setStartTime(new Date().toISOString());
     }, [orderType]);
 
     // ✅ Validate Contact Number (10 digits only)
@@ -62,9 +66,6 @@ const AddOrder = () => {
             return;
         }
 
-        // ✅ Adjust `start_time` to ensure it's correctly stored
-        const adjustedStartTime = new Date().toISOString();
-
         const newOrder = {
             transaction_id: transactionID,
             customer_name: clientName,
@@ -75,7 +76,7 @@ const AddOrder = () => {
             paint_quantity: paintQuantity,
             current_status: "Waiting",
             order_type: orderType,
-            start_time: adjustedStartTime // ✅ Ensuring start time is stored properly
+            start_time: startTime // ✅ Ensuring start time is stored properly
         };
 
         console.log("🚀 Sending order data:", newOrder);
@@ -94,6 +95,7 @@ const AddOrder = () => {
             setPaintQuantity("");
             setCategory("New Mix");
             setOrderType("Walk-in");
+            setStartTime(new Date().toISOString()); // ✅ Reset start time for next order
         } catch (error) {
             console.error("🚨 Error adding order:", error.message);
             alert("❌ Error adding order! Please check your API connection.");
@@ -128,7 +130,7 @@ const AddOrder = () => {
                 <p><strong>Paint Quantity:</strong> ${order.paint_quantity}</p>
                 <p><strong>Category:</strong> ${order.category}</p>
                 <p><strong>Order Type:</strong> ${order.order_type}</p>
-                <p><strong>Start Time:</strong> ${order.start_time}</p> <!-- ✅ Ensures Start Time appears on the receipt -->
+                <p><strong>Start Time:</strong> ${order.start_time}</p> <!-- ✅ Ensuring Start Time appears on the receipt -->
             </body>
             </html>
         `);
@@ -167,7 +169,7 @@ const AddOrder = () => {
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
                 <label>Start Time:</label>
-                <input type="text" className="form-control" value={new Date().toISOString()} disabled />
+                <input type="text" className="form-control" value={startTime} disabled />
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
             </form>
