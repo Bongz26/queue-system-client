@@ -102,7 +102,7 @@ const Dashboard = () => {
         } catch (error) {
             console.error("🚨 Error updating order status:", error);
         }
-    };
+       };
 
     return (
         <div className="container mt-4">
@@ -123,7 +123,7 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                     {orders.map(order => (
-                        <tr key={order.transaction_id}>
+                        <tr key={order.transaction_id} className={getOrderClass(order.category)}>
                             <td>{order.transaction_id}</td>
                             <td>{order.colour_code || "N/A"}</td>
                             <td>{order.paint_type}</td>
@@ -141,12 +141,12 @@ const Dashboard = () => {
     );
 };
 
-
-/ ✅ Restored priority-based order styling
+// ✅ Restored priority-based order styling
 const getOrderClass = (category) => {
     if (category === "New Mix") return "urgent";
     if (category === "Reorder Mix") return "warning";
     if (category === "Colour Code") return "standard";
     return "";
 };
+
 export default Dashboard;
