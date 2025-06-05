@@ -98,7 +98,7 @@ const Dashboard = () => {
                 <thead>
                     <tr>
                         <th>Transaction ID</th>
-                        <th>Col. Code</>
+                        <th>Col. Code</th>
                         <th>Paint Colour</th>
                         <th>Start Time</th>
                         <th>Status</th>
