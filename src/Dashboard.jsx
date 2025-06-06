@@ -6,9 +6,9 @@ const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onre
 
 // 🔧 ETC category-based time estimates
 const ETC_TIMES = {
-    "New Mix": 30,
-    "Reorder Mix": 20,
-    "Colour Code": 10,
+    "New Mix": 120,
+    "Reorder Mix": 30,
+    "Colour Code": 60,
 };
 
 const getOrderClass = (category) => {
