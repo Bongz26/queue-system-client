@@ -58,7 +58,7 @@ const AddOrder = () => {
             return;
         }
 
-        if (!paintQuantity || !["250ml", "500ml", "1L", "2L", "4L", "5L", "10L"].includes(paintQuantity)) {
+        if (!paintQuantity || !["250ml", "500ml","750ml", "1L","1.25L","1.5L","2L","2.5L","3L", "4L", "5L", "10L"].includes(paintQuantity)) {
             alert("❌ Please select a valid paint quantity!");
             return;
         }
