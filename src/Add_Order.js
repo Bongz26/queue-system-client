@@ -213,6 +213,7 @@ Track ID       : TRK-${order.transaction_id}
                     <option value="">Select Quantity</option>
                     <option value="250ml">250ml</option>
                     <option value="500ml">500ml</option>
+                    <option value="750ml">750ml</option>
                     <option value="1L">1L</option>
                     <option value="1.25L">1.25L</option>
                     <option value="1.5L">1.5L</option>
