@@ -196,7 +196,7 @@ Track ID       : TRK-${order.transaction_id}
                     <option>Colour Code</option>
                 </select>
 
-                <label>Paint Colour:</label>
+                <label>Car Details:</label>
                 <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
 
                 <label>Colour Code:</label>
