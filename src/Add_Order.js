@@ -106,33 +106,62 @@ const AddOrder = () => {
     };
 
     // ✅ Receipt Printing Function
-    const printReceipt = (order) => {
-        console.log("🖨️ Preparing receipt for order:", order);
-        const printWindow = window.open("", "_blank", "width=600,height=400");
-        if (!printWindow) {
-            alert("❌ Printing blocked! Enable pop-ups in your browser.");
-            return;
-        }
+ const printReceipt = (order) => {
+    console.log("🖨️ Preparing receipt for order:", order);
+    const printWindow = window.open("", "_blank", "width=600,height=400");
+    if (!printWindow) {
+        alert("❌ Printing blocked! Enable pop-ups in your browser.");
+        return;
+    }
 
-        const receiptContent = `
-        ----------------------------------------
-               PAINT QUEUE SYSTEM - RECEIPT
-        ----------------------------------------
-        Order No.: #${order.transaction_id}
-        Client Name: ${order.customer_name}
-        Contact: ${order.client_contact}
-        Paint Type: ${order.paint_type}
-        Color Code: ${order.colour_code} ${order.colour_code === "Pending" ? "(C.code to be assigned)" : ""}
-        Category: ${order.category}
-    
-        TrackID: TRK-${order.transaction_id}  
-        ----------------------------------------
-        `;
-
-        printWindow.document.write(`<pre>${receiptContent}</pre>`);
-        printWindow.document.close();
-        printWindow.print();
+    const formatLine = (label, value) => {
+        return `${label.padEnd(15)}: ${value}`;
     };
+
+    const receiptContent = `
+=============================================
+         PROCUSHION QUEUE SYSTEM - RECEIPT
+=============================================
+${formatLine("Order No.", `#${order.transaction_id}`)}
+${formatLine("Client", order.customer_name)}
+${formatLine("Contact", order.client_contact)}
+${formatLine("Car Details", order.paint_type)}
+${formatLine("Colour Code", order.colour_code)} ${order.colour_code === "Pending" ? "(To be assigned)" : ""}
+${formatLine("Category", order.category)}
+
+Track ID       : TRK-${order.transaction_id}
+
+----------------------------------------
+  WhatsApp Support: 083 579 6982
+----------------------------------------
+
+     Thank you for your order!
+========================================
+`;
+
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Receipt</title>
+                <style>
+                    body {
+                        font-family: monospace;
+                        white-space: pre;
+                        font-size: 12px;
+                        margin: 0;
+                        padding: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                ${receiptContent}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+};
+
 
     return (
         <div className="container mt-4">
@@ -185,6 +214,15 @@ const AddOrder = () => {
                     <option value="250ml">250ml</option>
                     <option value="500ml">500ml</option>
                     <option value="1L">1L</option>
+                    <option value="1.25L">1.25L</option>
+                    <option value="1.5L">1.5L</option>
+                    <option value="2L">2L</option>    
+                    <option value="2.5L">2.5L</option>
+                    <option value="3L">3L</option>
+                    <option value="4L">4L</option>
+                    <option value="5L">5L</option>
+                    <option value="10L">10L</option>
+                    
                 </select>
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
