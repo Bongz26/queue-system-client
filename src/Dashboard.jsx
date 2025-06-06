@@ -90,8 +90,9 @@ const Dashboard = () => {
     const day = String(date.getDate()).padStart(2, "0");
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
+    
+//${year}-${month}-${day}  
+    return `${hours}:${minutes}`;
 };
 
 
@@ -124,11 +125,12 @@ const Dashboard = () => {
                     <tr>
                         <th>Transaction ID</th>
                         <th>Col. Code</th>
-                        <th>Paint Colour</th>
+                        <th>Car Details</th>
+                        <th>Amount</th>
                         <th>Start Time</th>
                         <th>Status</th>
                         <th>Customer</th>
-                        <th>Assigned Employee</th>
+                        <th>Assigned To</th>
                         <th>ETC (min)</th> {/* 🔧 Added ETC column */}
                         <th>Action</th>
                     </tr>
@@ -138,7 +140,8 @@ const Dashboard = () => {
                         <tr key={order.transaction_id} className={getOrderClass(order.category)}>
                             <td>{order.transaction_id}</td>
                             <td>{order.colour_code}</td>
-                            <td>{order.paint_type}</td>
+                            <td>{order.paint_type}</td>  {/*vehicle Details*/}
+                            <td>{order.paint_quantity}</td>
                             <td>{formatDateTime(order.start_time)}</td>
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
