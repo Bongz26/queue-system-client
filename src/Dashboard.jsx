@@ -130,6 +130,7 @@ const Dashboard = () => {
                         <th>Start Time</th>
                         <th>Status</th>
                         <th>Customer</th>
+                        <th>Order Type</th>
                         <th>Assigned To</th>
                         <th>ETC (min)</th> {/* 🔧 Added ETC column */}
                         <th>Action</th>
@@ -145,6 +146,7 @@ const Dashboard = () => {
                             <td>{formatDateTime(order.start_time)}</td>
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
+                            <td>{order.order_type}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
                             <td>{order.etc} min</td> {/* 🔧 Display ETC */}
                             <td>
