@@ -18,7 +18,7 @@ const getOrderClass = (category) => {
     return "";
 };
 
-const Dashboard = () => {
+const Dashboard = ({ userRole, adminId }) => {
     const [orders, setOrders] = useState([]);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
     const [error, setError] = useState("");
@@ -67,10 +67,18 @@ const Dashboard = () => {
             }
         }
 
+        // ✅ Restrict "Complete" status to Admins only
+        if (newStatus === "Complete" && userRole !== "Admin") {
+            alert("❌ Only Admins can confirm completion!");
+            return;
+        }
+
         try {
             await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
                 current_status: newStatus,
-                assigned_employee: employeeName || null
+                assigned_employee: employeeName || null,
+                userRole,
+                adminId: userRole === "Admin" ? adminId : null
             });
 
             console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
@@ -81,36 +89,6 @@ const Dashboard = () => {
             setError("Error updating order status.");
         }
     };
-
-    const formatDateTime = (isoString) => {
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    const month = monthNames[date.getMonth()];
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    
-//${year}-${month}-${day}  
-    return `${hours}:${minutes}`;
-};
-
-
-    // 🔧 ETC calculation: sum of ETCs of all earlier non-ready orders
-    const calculateETCPerOrder = () => {
-        let totalTime = 0;
-        return orders.map(order => {
-            if (order.current_status === "Ready") {
-                return { ...order, etc: 0 };
-            }
-            const orderETC = ETC_TIMES[order.category] || 0;
-            const etcValue = totalTime;
-            totalTime += orderETC;
-            return { ...order, etc: etcValue };
-        });
-    };
-
-    const ordersWithETC = calculateETCPerOrder();
 
     return (
         <div className="container mt-4">
@@ -127,28 +105,24 @@ const Dashboard = () => {
                         <th>Col. Code</th>
                         <th>Car Details</th>
                         <th>Amount</th>
-                        <th>Start Time</th>
                         <th>Status</th>
                         <th>Customer</th>
                         <th>Order Type</th>
                         <th>Assigned To</th>
-                        <th>ETC (min)</th> {/* 🔧 Added ETC column */}
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {ordersWithETC.map(order => (
+                    {orders.map(order => (
                         <tr key={order.transaction_id} className={getOrderClass(order.category)}>
                             <td>{order.transaction_id}</td>
                             <td>{order.colour_code}</td>
-                            <td>{order.paint_type}</td>  {/*vehicle Details*/}
+                            <td>{order.paint_type}</td>
                             <td>{order.paint_quantity}</td>
-                            <td>{formatDateTime(order.start_time)}</td>
                             <td>{order.current_status}</td>
                             <td>{order.customer_name}</td>
                             <td>{order.order_type}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
-                            <td>{order.etc} min</td> {/* 🔧 Display ETC */}
                             <td>
                                 <select
                                     className="form-select"
@@ -158,11 +132,9 @@ const Dashboard = () => {
                                     <option value={order.current_status}>{order.current_status}</option>
                                     {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
                                     {order.current_status === "Mixing" && <option value="Spraying">Spraying</option>}
-                                    {order.current_status === "Spraying" && (
-                                        <>
-                                            <option value="Mixing">Back to Mixing</option>
-                                            <option value="Ready">Ready</option>
-                                        </>
+                                    {order.current_status === "Spraying" && <option value="Ready">Ready</option>}
+                                    {order.current_status === "Ready" && userRole === "Admin" && (
+                                        <option value="Complete">Complete</option>
                                     )}
                                 </select>
                             </td>
