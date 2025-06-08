@@ -18,11 +18,21 @@ const getOrderClass = (category) => {
     return "";
 };
 
-const Dashboard = ({ userRole, adminId }) => {
+const Dashboard = () => {
     const [orders, setOrders] = useState([]);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [userRole, setUserRole] = useState("User"); // Default role
+
+    const handleLogin = () => {
+        const role = prompt("Enter your role (Admin/User):");
+        if (["Admin", "User"].includes(role)) {
+            setUserRole(role);
+        } else {
+            alert("❌ Invalid role! Use 'Admin' or 'User'");
+        }
+    };
 
     const fetchOrders = useCallback(async () => {
         setLoading(true);
@@ -77,8 +87,7 @@ const Dashboard = ({ userRole, adminId }) => {
             await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
                 current_status: newStatus,
                 assigned_employee: employeeName || null,
-                userRole,
-                adminId: userRole === "Admin" ? adminId : null
+                userRole
             });
 
             console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
@@ -93,6 +102,7 @@ const Dashboard = ({ userRole, adminId }) => {
     return (
         <div className="container mt-4">
             <h1 className="text-center">Paints Queue Dashboard</h1>
+            <button onClick={handleLogin} className="btn btn-primary mb-3">Login as Admin</button>
             <p>Active Orders: <strong>{activeOrdersCount}</strong></p>
             {error && <div className="alert alert-danger">{error}</div>}
             <button className="btn btn-secondary mb-2" onClick={fetchOrders} disabled={loading}>
