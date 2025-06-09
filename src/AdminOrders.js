@@ -13,9 +13,8 @@ const AdminOrders = ({ userRole }) => {
 
     const fetchReadyOrders = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/api/orders`);
-            const filteredOrders = response.data.filter(order => order.current_status === "Ready");
-            setReadyOrders(filteredOrders);
+            const response = await axios.get(`${BASE_URL}/api/orders/admin`);
+            setReadyOrders(response.data);
         } catch (error) {
             setError("Error fetching ready orders.");
         }
