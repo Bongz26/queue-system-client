@@ -183,7 +183,7 @@ Track ID       : TRK-${order.transaction_id}
                     type="text"
                     className="form-control"
                     value={transactionID}
-                    onChange={handleTransactionIDChange}
+                onChange={(e) => {
                      if (orderType === "Paid") {
                         const userDigits = e.target.value.replace(/\D/g, "").slice(-4);
                         setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
