@@ -37,13 +37,14 @@ const AdminOrders = ({ userRole }) => {
 
     return (
         <div className="container mt-4">
-            <h2>Admin - Ready Orders</h2>
+            <h2> Unpaid Orders </h2>
             {error && <div className="alert alert-danger">{error}</div>}
             <table className="table table-bordered">
                 <thead>
                     <tr>
                         <th>Transaction ID</th>
                         <th>Customer</th>
+                        <th>Customer No.<\th>
                         <th>Amount</th>
                         <th>Action</th>
                     </tr>
@@ -53,6 +54,7 @@ const AdminOrders = ({ userRole }) => {
                         <tr key={order.transaction_id}>
                             <td>{order.transaction_id}</td>
                             <td>{order.customer_name}</td>
+                            <td>{oder.client_contact}</td>
                             <td>{order.paint_quantity}</td>
                             <td>
                                 <button onClick={() => markAsPaid(order.transaction_id)} className="btn btn-success">
