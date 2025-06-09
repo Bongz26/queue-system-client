@@ -24,23 +24,24 @@ const AddOrder = () => {
     };
 
     // ✅ Handle Transaction ID for Walk-in orders (User manually enters last 4 digits)
-    const handleTransactionIDChange = (e) => {
+   /* const handleTransactionIDChange = (e) => {
         if (orderType === "Paid") {
             const userDigits = e.target.value.replace(/\D/g, "").slice(-4); // Ensure only 4 digits
             setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
         }
-    };
+    };*/
 
-    useEffect(() => {
-        if (orderType === "Order") {
-            setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(1000 + Math.random() * 9000).toString());
-        } else {
-            setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Allows user to enter last 4 digits manually
-        }
+  useEffect(() => {
+    if (orderType === "Order") {
+        setTransactionID(`${formatDateDDMMYYYY()}-PO_${Math.floor(1000 + Math.random() * 9000)}`);
+    } else {
+        setTransactionID(`${formatDateDDMMYYYY()}-`); // ✅ Allows user input for "Paid" orders
+    }
+    console.log("Generated Transaction ID:", transactionID);
 
-        // ✅ Automatically set `start_time`
-        setStartTime(new Date().toISOString());
-    }, [orderType]);
+    // ✅ Automatically set `start_time`
+    setStartTime(new Date().toISOString());
+}, [orderType]);
 
     // ✅ Validate Contact Number (10 digits only)
     const validateContact = (input) => /^\d{10}$/.test(input);
@@ -63,7 +64,7 @@ const AddOrder = () => {
             return;
         }
 
-        if (transactionID.length !== 13) { // ✅ Ensures YYYYMMDD-XXXX (Total 13 characters)
+        if (transactionID.length !== 13 and orderType !== 'Order') { // ✅ Ensures YYYYMMDD-XXXX (Total 13 characters)
             alert("❌ Paid orders must have a 4-digit Transaction ID!");
             return;
         }
