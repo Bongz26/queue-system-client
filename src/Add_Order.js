@@ -37,11 +37,15 @@ const AddOrder = () => {
     } else {
         setTransactionID(`${formatDateDDMMYYYY()}-`); // ✅ Allows user input for "Paid" orders
     }
-    console.log("Generated Transaction ID:", transactionID);
+   // console.log("Generated Transaction ID:", transactionID);
 
     // ✅ Automatically set `start_time`
     setStartTime(new Date().toISOString());
 }, [orderType]);
+
+useEffect(() => {
+    console.log("Generated Transaction ID:", transactionID);
+}, [transactionID]); // ✅ Logs whenever transactionID changes
 
     // ✅ Validate Contact Number (10 digits only)
     const validateContact = (input) => /^\d{10}$/.test(input);
@@ -64,7 +68,7 @@ const AddOrder = () => {
             return;
         }
 
-        if (transactionID.length !== 13 and orderType !== 'Order') { // ✅ Ensures YYYYMMDD-XXXX (Total 13 characters)
+        if (transactionID.length !== 13 && orderType !== 'Order') { // ✅ Ensures YYYYMMDD-XXXX (Total 13 characters)
             alert("❌ Paid orders must have a 4-digit Transaction ID!");
             return;
         }
