@@ -60,7 +60,7 @@ const Dashboard = () => {
         let employeeCode = null;
         let employeeName = null;
 
-        if (["Mixing", "Spraying"].includes(newStatus)) {
+        if (["Re-Mixing","Mixing", "Spraying"].includes(newStatus)) {
             employeeCode = prompt("Enter Employee Code:");
             if (!employeeCode) return;
 
