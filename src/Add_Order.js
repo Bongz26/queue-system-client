@@ -184,8 +184,13 @@ Track ID       : TRK-${order.transaction_id}
                     className="form-control"
                     value={transactionID}
                     onChange={handleTransactionIDChange}
+                     if (orderType === "Paid") {
+                        const userDigits = e.target.value.replace(/\D/g, "").slice(-4);
+                        setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
+                            }
+                        }}
                     disabled={orderType === "Order"} 
-                    placeholder="Enter 4-digit ID for Walk-in"
+                    placeholder="Enter 4-digit ID for Paid Customer"
                 />
 
                 <label>Client Name:</label>
