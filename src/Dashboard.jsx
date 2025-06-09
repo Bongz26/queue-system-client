@@ -142,7 +142,10 @@ const Dashboard = () => {
                                     <option value={order.current_status}>{order.current_status}</option>
                                     {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
                                     {order.current_status === "Mixing" && <option value="Spraying">Spraying</option>}
-                                    {order.current_status === "Spraying" && <option value="Ready">Ready</option>}
+                                    {order.current_status === "Spraying" &&  <>
+                                            <option value="Mixing">Re-Mixing</option>
+                                            <option value="Ready">Ready</option>
+                                        </>
                                     {order.current_status === "Ready" && userRole === "Admin" && (
                                         <option value="Complete">Complete</option>
                                     )}
