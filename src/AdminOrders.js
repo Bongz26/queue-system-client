@@ -54,7 +54,7 @@ const AdminOrders = ({ userRole }) => {
                         <tr key={order.transaction_id}>
                             <td>{order.transaction_id}</td>
                             <td>{order.customer_name}</td>
-                            <td>{oder.client_contact}</td>
+                            <td>{order.client_contact}</td>
                             <td>{order.paint_quantity}</td>
                             <td>
                                 <button onClick={() => markAsPaid(order.transaction_id)} className="btn btn-success">
