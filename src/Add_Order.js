@@ -32,7 +32,7 @@ const AddOrder = () => {
     };
 
     useEffect(() => {
-        if (orderType === "Phone Order") {
+        if (orderType === "Order") {
             setTransactionID(formatDateDDMMYYYY() + "-" + Math.floor(1000 + Math.random() * 9000).toString());
         } else {
             setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Allows user to enter last 4 digits manually
@@ -170,7 +170,7 @@ Track ID       : TRK-${order.transaction_id}
                 <label>Order Type:</label>
                 <select className="form-control" value={orderType} onChange={(e) => setOrderType(e.target.value)}>
                     <option>Paid</option>
-                    <option>Phone Order</option>
+                    <option>Order</option>
                 </select>
 
                 <label>Transaction ID:</label>
@@ -179,7 +179,7 @@ Track ID       : TRK-${order.transaction_id}
                     className="form-control"
                     value={transactionID}
                     onChange={handleTransactionIDChange}
-                    disabled={orderType === "Phone Order"} 
+                    disabled={orderType === "Order"} 
                     placeholder="Enter 4-digit ID for Walk-in"
                 />
 
