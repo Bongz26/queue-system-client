@@ -44,7 +44,7 @@ const AdminOrders = ({ userRole }) => {
                     <tr>
                         <th>Transaction ID</th>
                         <th>Customer</th>
-                        <th>Customer No.<\th>
+                        <th>Customer No.</th>
                         <th>Amount</th>
                         <th>Action</th>
                     </tr>
