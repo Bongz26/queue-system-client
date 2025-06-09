@@ -146,7 +146,7 @@ const Dashboard = () => {
     
     {order.current_status === "Spraying" && (
         <>
-            <option value="Re-Mixing">Back to Mixing</option>
+            <option value="Mixing">Back to Mixing</option>
             <option value="Ready">Ready</option>
         </>
     )}
