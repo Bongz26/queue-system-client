@@ -63,7 +63,7 @@ useEffect(() => {
             return;
         }
 
-        if(!colorCode.trim()){
+        if(!colorCode.trim() && category!=='New Mix'){
             alert("❌ Colour Code cannot be empty!");
             return;
         }
