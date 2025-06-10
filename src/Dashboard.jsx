@@ -56,42 +56,36 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-    const updateStatus = async (orderId, newStatus, currentColourCode) => {
-        let employeeCode = null;
-        let employeeName = null;
-        let updatedColourCode = currentColourCode;
+   const updateStatus = async (orderId, newStatus, currentColourCode) => {
+    let employeeCode = null;
+    let employeeName = null;
+    let updatedColourCode = currentColourCode;
 
-
-        if (["Re-Mixing","Mixing", "Spraying"].includes(newStatus)) {
-            employeeCode = prompt("Enter Employee Code:");
-            if (!employeeCode) return;
-
-            try {
-                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-                if (!employeeResponse.data || !employeeResponse.data.employee_name) {
-                    alert("❌ Invalid Employee Code!");
-                    return;
-                }
-                employeeName = employeeResponse.data.employee_name;
-            } catch (error) {
-                alert("❌ Unable to verify employee code!");
-                return;
-            }
-        }
-
-        // ✅ Restrict "Complete" status to Admins only
-        if (newStatus === "Complete" && userRole !== "Admin") {
-            alert("❌ Only Admins can confirm completion!");
-            return;
-        }
+    // ✅ Require Employee Code for "Re-Mixing", "Mixing", and "Spraying"
+    if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
+        employeeCode = prompt("Enter Employee Code:");
+        if (!employeeCode) return;
 
         try {
-            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
-                current_status: newStatus,
-                assigned_employee: employeeName || null,
-                userRole
-            });
+            const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+            if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+                alert("❌ Invalid Employee Code!");
+                return;
+            }
+            employeeName = employeeResponse.data.employee_name;
+        } catch (error) {
+            alert("❌ Unable to verify employee code!");
+            return;
+        }
+    }
 
+    // ✅ Restrict "Complete" status to Admins only
+    if (newStatus === "Complete" && userRole !== "Admin") {
+        alert("❌ Only Admins can confirm completion!");
+        return;
+    }
+
+    // ✅ Require Colour Code for "Ready"
     if (newStatus === "Ready" && (!currentColourCode || currentColourCode === "Pending")) {
         updatedColourCode = prompt("Please enter the Colour Code before marking the order as Ready:");
         if (!updatedColourCode || updatedColourCode.trim() === "") {
@@ -100,23 +94,24 @@ const Dashboard = () => {
         }
     }
 
+    // ✅ Single API Call with Updated Fields
     try {
         await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
-            colour_code: updatedColourCode
+            assigned_employee: employeeName || null,
+            colour_code: updatedColourCode,
+            userRole
         });
 
-
-
-            console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
-            setTimeout(() => {
-                fetchOrders();
-            }, 500);
-        } catch (error) {
-            setError("Error updating order status.");
-        }
-    };
-
+        console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
+        setTimeout(() => {
+            fetchOrders();
+        }, 500);
+    } catch (error) {
+        alert("❌ Error updating order status!");
+        console.error("🚨 Error updating:", error);
+    }
+};
     return (
         <div className="container mt-4">
             <h1 className="text-center">Paints Queue Dashboard</h1>
