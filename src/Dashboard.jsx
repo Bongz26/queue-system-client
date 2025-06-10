@@ -56,9 +56,11 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-    const updateStatus = async (orderId, newStatus) => {
+    const updateStatus = async (orderId, newStatus, currentColourCode) => {
         let employeeCode = null;
         let employeeName = null;
+        let updatedColourCode = currentColourCode;
+
 
         if (["Re-Mixing","Mixing", "Spraying"].includes(newStatus)) {
             employeeCode = prompt("Enter Employee Code:");
@@ -89,6 +91,22 @@ const Dashboard = () => {
                 assigned_employee: employeeName || null,
                 userRole
             });
+
+    if (newStatus === "Ready" && (!currentColourCode || currentColourCode === "Pending")) {
+        updatedColourCode = prompt("Please enter the Colour Code before marking the order as Ready:");
+        if (!updatedColourCode || updatedColourCode.trim() === "") {
+            alert("❌ Colour Code is required to mark order as Ready!");
+            return;
+        }
+    }
+
+    try {
+        await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+            current_status: newStatus,
+            colour_code: updatedColourCode
+        });
+
+
 
             console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
             setTimeout(() => {
