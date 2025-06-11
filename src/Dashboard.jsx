@@ -56,7 +56,7 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-  const updateStatus = async (orderId,empCode, newStatus, currentColourCode, currentEmp) => {
+  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeCode = null;
     let employeeName = currentEmp;
     let updatedColourCode = currentColourCode;
