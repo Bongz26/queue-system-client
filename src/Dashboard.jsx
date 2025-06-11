@@ -59,7 +59,7 @@ const Dashboard = () => {
  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeCode = null;
     let employeeName = currentEmp;
-    let updatedColourCode = currentColourCode;
+    let updatedColourCode = currentColourCode  || "";
 
     // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
     if (["Mixing", "Spraying", "Re-Mixing"].includes(newStatus)) {
