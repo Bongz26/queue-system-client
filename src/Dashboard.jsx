@@ -56,60 +56,64 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
-    let employeeCode = null;
-    let employeeName = currentEmp || "Unknown"; // Ensure employee is always defined
-    let updatedColourCode = currentColourCode || "Unknown"; // Prevent empty values
+    const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+        let employeeCode = null;
+        let employeeName = currentEmp || "Unknown"; // Ensure employee is always defined
+        let updatedColourCode = currentColourCode || "Unknown"; // Prevent empty values
 
-    // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
-    if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
-        employeeCode = prompt("🔍 Enter Employee Code for assignment:");
-        if (!employeeCode) return;
+        // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
+        if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
+            employeeCode = prompt("🔍 Enter Employee Code for assignment:");
+            if (!employeeCode) return;
 
-        try {
-            const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-            if (!employeeResponse.data || !employeeResponse.data.employee_name) {
-                alert("❌ Invalid Employee Code! Try again.");
+            try {
+                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+                if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+                    alert("❌ Invalid Employee Code! Try again.");
+                    return;
+                }
+                employeeName = employeeResponse.data.employee_name;
+            } catch (error) {
+                alert("❌ Unable to verify employee code! Please check your connection.");
                 return;
             }
-            employeeName = employeeResponse.data.employee_name;
-        } catch (error) {
-            alert("❌ Unable to verify employee code! Please check your connection.");
-            return;
         }
-    }
 
-    // ✅ Require Colour Code for "Ready"
-    if (newStatus === "Ready" && (!currentColourCode || currentColourCode.trim() === "")) {
-        let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
-        if (!inputCode || inputCode.trim() === "") {
-            alert("❌ Colour Code is required to mark the order as Ready!");
-            return;
+        // ✅ Require Colour Code for "Ready"
+        if (newStatus === "Ready" && (!currentColourCode || currentColourCode.trim() === "")) {
+            let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
+            if (!inputCode || inputCode.trim() === "") {
+                alert("❌ Colour Code is required to mark the order as Ready!");
+                return;
+            }
+            updatedColourCode = inputCode.trim();
         }
-        updatedColourCode = inputCode.trim();
-    }
 
-    // ✅ Log Payload Before Sending
-    console.log("📦 Sending Payload:", {
-        current_status: newStatus,
-        assigned_employee: employeeName,
-        colour_code: updatedColourCode,
-        userRole
-    });
-
-    try {
-        await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+        // ✅ Log Payload Before Sending
+        console.log("📦 Sending Payload:", {
             current_status: newStatus,
             assigned_employee: employeeName,
             colour_code: updatedColourCode,
             userRole
         });
 
-        console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
-        setTimeout(() => {
-            fetchOrders();
-        }, 500);
-    } catch (error)
+        try {
+            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+                current_status: newStatus,
+                assigned_employee: employeeName,
+                colour_code: updatedColourCode,
+                userRole
+            });
+
+            console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
+            setTimeout(() => {
+                fetchOrders();
+            }, 500);
+        } catch (error) {
+            alert("❌ Error updating order status!");
+            console.error("🚨 Error updating:", error);
+        }
+    };
 
     return (
         <div className="container mt-4">
@@ -146,28 +150,25 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
                             <td>{order.order_type}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
                             <td>
-                              <select
-    className="form-select"
-    value={order.current_status}
-    onChange={(e) => updateStatus(order.transaction_id, e.target.value)}
->
-    <option value={order.current_status}>{order.current_status}</option>
-
-    {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
-    {order.current_status === "Mixing" && <option value="Spraying">Spraying</option>}
-    
-    {order.current_status === "Spraying" && (
-        <>
-            <option value="Re-Mixing">Back to Mixing</option>
-            <option value="Ready">Ready</option>
-        </>
-    )}
-     {order.current_status === "Re-Mixing" && <option value="Spraying">Spraying</option>}
-
-    {order.current_status === "Ready" && userRole === "Admin" && (
-        <option value="Complete">Complete</option>
-    )}
-</select>
+                                <select
+                                    className="form-select"
+                                    value={order.current_status}
+                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value, order.colour_code, order.assigned_employee)}
+                                >
+                                    <option value={order.current_status}>{order.current_status}</option>
+                                    {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
+                                    {order.current_status === "Mixing" && <option value="Spraying">Spraying</option>}
+                                    {order.current_status === "Spraying" && (
+                                        <>
+                                            <option value="Re-Mixing">Back to Mixing</option>
+                                            <option value="Ready">Ready</option>
+                                        </>
+                                    )}
+                                    {order.current_status === "Re-Mixing" && <option value="Spraying">Spraying</option>}
+                                    {order.current_status === "Ready" && userRole === "Admin" && (
+                                        <option value="Complete">Complete</option>
+                                    )}
+                                </select>
                             </td>
                         </tr>
                     ))}
