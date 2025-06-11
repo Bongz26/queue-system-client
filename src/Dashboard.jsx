@@ -56,25 +56,25 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-   const updateStatus = async (orderId, newStatus, currentColourCode) => {
+  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeCode = null;
-    let employeeName = null;
+    let employeeName = currentEmp;
     let updatedColourCode = currentColourCode;
 
     // ✅ Require Employee Code for "Re-Mixing", "Mixing", and "Spraying"
     if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
-        employeeCode = prompt("Enter Employee Code:");
+        employeeCode = prompt("🔍 Enter Employee Code for assignment:");
         if (!employeeCode) return;
 
         try {
             const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
             if (!employeeResponse.data || !employeeResponse.data.employee_name) {
-                alert("❌ Invalid Employee Code!");
+                alert("❌ Invalid Employee Code! Try again.");
                 return;
             }
             employeeName = employeeResponse.data.employee_name;
         } catch (error) {
-            alert("❌ Unable to verify employee code!");
+            alert("❌ Unable to verify employee code! Please check your connection.");
             return;
         }
     }
@@ -85,20 +85,32 @@ const Dashboard = () => {
         return;
     }
 
-    // ✅ Require Colour Code for "Ready"
+    // ✅ Improved Colour Code Prompt & Validation
+    const validColourCodes = ["Red", "Blue", "Green", "Yellow", "White", "Black"]; // Example valid codes
+
     if (newStatus === "Ready" && (!currentColourCode || currentColourCode === "Pending")) {
-        updatedColourCode = prompt("Please enter the Colour Code before marking the order as Ready:");
-        if (!updatedColourCode || updatedColourCode.trim() === "") {
-            alert("❌ Colour Code is required to mark order as Ready!");
+        let inputCode = prompt("🎨 Please enter the **Colour Code** (e.g., Red, Blue, etc.) for this order:");
+
+        if (!inputCode || inputCode.trim() === "") {
+            alert("❌ Colour Code is required to mark the order as Ready!");
             return;
         }
+
+        inputCode = inputCode.trim();
+
+        if (!validColourCodes.includes(inputCode)) {
+            alert("⚠️ Invalid Colour Code! Please enter a valid colour from the system.");
+            return;
+        }
+
+        updatedColourCode = inputCode;
     }
 
     // ✅ Single API Call with Updated Fields
     try {
         await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
-            assigned_employee: employeeName || null,
+            assigned_employee: employeeName,
             colour_code: updatedColourCode,
             userRole
         });
