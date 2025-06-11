@@ -56,13 +56,13 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeCode = null;
     let employeeName = currentEmp;
     let updatedColourCode = currentColourCode;
 
-    // ✅ Require Employee Code for "Re-Mixing", "Mixing", and "Spraying"
-    if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
+    // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
+    if (["Mixing", "Spraying", "Re-Mixing"].includes(newStatus)) {
         employeeCode = prompt("🔍 Enter Employee Code for assignment:");
         if (!employeeCode) return;
 
@@ -79,22 +79,13 @@ const Dashboard = () => {
         }
     }
 
-    // ✅ Restrict "Complete" status to Admins only
-    if (newStatus === "Complete" && userRole !== "Admin") {
-        alert("❌ Only Admins can confirm completion!");
-        return;
-    }
-
-
+    // ✅ Require Colour Code for "Ready"
     if (newStatus === "Ready" && (!currentColourCode || currentColourCode === "Pending")) {
         let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
-
         if (!inputCode || inputCode.trim() === "") {
             alert("❌ Colour Code is required to mark the order as Ready!");
             return;
         }
-
-        
         updatedColourCode = inputCode;
     }
 
@@ -102,7 +93,7 @@ const Dashboard = () => {
     try {
         await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
-            assigned_employee: employeeName,
+            assigned_employee: employeeName, // Ensure employee is always assigned
             colour_code: updatedColourCode,
             userRole
         });
@@ -116,6 +107,7 @@ const Dashboard = () => {
         console.error("🚨 Error updating:", error);
     }
 };
+
     return (
         <div className="container mt-4">
             <h1 className="text-center">Paints Queue Dashboard</h1>
