@@ -58,10 +58,10 @@ const Dashboard = () => {
 
 const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeCode = null;
-    let employeeName = currentEmp;
-    let updatedColourCode = currentColourCode || "Unknown"; // Ensure it is never undefined or empty
+    let employeeName = currentEmp || "Unknown"; // Ensure employee is always defined
+    let updatedColourCode = currentColourCode || "Unknown"; // Prevent empty values
 
-    // ✅ Require Employee Code for "Re-Mixing", "Mixing", "Spraying"
+    // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
     if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
         employeeCode = prompt("🔍 Enter Employee Code for assignment:");
         if (!employeeCode) return;
@@ -82,21 +82,26 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
     // ✅ Require Colour Code for "Ready"
     if (newStatus === "Ready" && (!currentColourCode || currentColourCode.trim() === "")) {
         let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
-
         if (!inputCode || inputCode.trim() === "") {
             alert("❌ Colour Code is required to mark the order as Ready!");
             return;
         }
-
         updatedColourCode = inputCode.trim();
     }
 
-    // ✅ Ensure Colour Code is sent in the request
+    // ✅ Log Payload Before Sending
+    console.log("📦 Sending Payload:", {
+        current_status: newStatus,
+        assigned_employee: employeeName,
+        colour_code: updatedColourCode,
+        userRole
+    });
+
     try {
         await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
-            assigned_employee: employeeName, // Ensure employee is always assigned
-            colour_code: updatedColourCode, // Now properly formatted
+            assigned_employee: employeeName,
+            colour_code: updatedColourCode,
             userRole
         });
 
@@ -104,11 +109,7 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
         setTimeout(() => {
             fetchOrders();
         }, 500);
-    } catch (error) {
-        alert("❌ Error updating order status!");
-        console.error("🚨 Error updating:", error);
-    }
-};
+    } catch (error)
 
     return (
         <div className="container mt-4">
