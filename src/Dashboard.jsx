@@ -4,26 +4,13 @@ import "./styles/queueStyles.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
 
-// 🔧 ETC category-based time estimates
-const ETC_TIMES = {
-    "New Mix": 120,
-    "Reorder Mix": 30,
-    "Colour Code": 60,
-};
-
-const getOrderClass = (category) => {
-    if (category === "New Mix") return "urgent";
-    if (category === "Reorder Mix") return "warning";
-    if (category === "Colour Code") return "standard";
-    return "";
-};
-
 const Dashboard = () => {
     const [orders, setOrders] = useState([]);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [userRole, setUserRole] = useState("User"); // Default role
+    const [colourCodes, setColourCodes] = useState({}); // Store Colour Codes per order
 
     const handleLogin = () => {
         const role = prompt("Enter your role (Admin/User):");
@@ -56,74 +43,60 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
-    let employeeCode = null;
-    let employeeName = currentEmp;
-    let updatedColourCode = currentColourCode;
+    const updateStatus = async (orderId, newStatus, currentEmp) => {
+        let employeeCode = null;
+        let employeeName = currentEmp;
+        let updatedColourCode = colourCodes[orderId] || ""; // Get Colour Code from input field
 
-    // ✅ Require Employee Code for "Re-Mixing", "Mixing", and "Spraying"
-    if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
-        employeeCode = prompt("🔍 Enter Employee Code for assignment:");
-        if (!employeeCode) return;
+        // ✅ Require Employee Code for "Re-Mixing", "Mixing", and "Spraying"
+        if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
+            employeeCode = prompt("Enter Employee Code:");
+            if (!employeeCode) return;
 
-        try {
-            const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-            if (!employeeResponse.data || !employeeResponse.data.employee_name) {
-                alert("❌ Invalid Employee Code! Try again.");
+            try {
+                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+                if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+                    alert("❌ Invalid Employee Code! Try again.");
+                    return;
+                }
+                employeeName = employeeResponse.data.employee_name;
+            } catch (error) {
+                alert("❌ Unable to verify employee code! Please check your connection.");
                 return;
             }
-            employeeName = employeeResponse.data.employee_name;
-        } catch (error) {
-            alert("❌ Unable to verify employee code! Please check your connection.");
+        }
+
+        // ✅ Restrict "Complete" status to Admins only
+        if (newStatus === "Complete" && userRole !== "Admin") {
+            alert("❌ Only Admins can confirm completion!");
             return;
         }
-    }
 
-    // ✅ Restrict "Complete" status to Admins only
-    if (newStatus === "Complete" && userRole !== "Admin") {
-        alert("❌ Only Admins can confirm completion!");
-        return;
-    }
-
-    // ✅ Improved Colour Code Prompt & Validation
-    const validColourCodes = ["Red", "Blue", "Green", "Yellow", "White", "Black"]; // Example valid codes
-
-    if (newStatus === "Ready" && (!currentColourCode || currentColourCode === "Pending")) {
-        let inputCode = prompt("🎨 Please enter the **Colour Code** (e.g., Red, Blue, etc.) for this order:");
-
-        if (!inputCode || inputCode.trim() === "") {
+        // ✅ Require Colour Code for "Ready"
+        if (newStatus === "Ready" && (!updatedColourCode || updatedColourCode.trim() === "")) {
             alert("❌ Colour Code is required to mark the order as Ready!");
             return;
         }
 
-        inputCode = inputCode.trim();
+        // ✅ Single API Call with Updated Fields
+        try {
+            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+                current_status: newStatus,
+                assigned_employee: employeeName,
+                colour_code: updatedColourCode,
+                userRole
+            });
 
-        if (!validColourCodes.includes(inputCode)) {
-            alert("⚠️ Invalid Colour Code! Please enter a valid colour from the system.");
-            return;
+            console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
+            setTimeout(() => {
+                fetchOrders();
+            }, 500);
+        } catch (error) {
+            alert("❌ Error updating order status!");
+            console.error("🚨 Error updating:", error);
         }
+    };
 
-        updatedColourCode = inputCode;
-    }
-
-    // ✅ Single API Call with Updated Fields
-    try {
-        await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
-            current_status: newStatus,
-            assigned_employee: employeeName,
-            colour_code: updatedColourCode,
-            userRole
-        });
-
-        console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
-        setTimeout(() => {
-            fetchOrders();
-        }, 500);
-    } catch (error) {
-        alert("❌ Error updating order status!");
-        console.error("🚨 Error updating:", error);
-    }
-};
     return (
         <div className="container mt-4">
             <h1 className="text-center">Paints Queue Dashboard</h1>
@@ -149,9 +122,25 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                     {orders.map(order => (
-                        <tr key={order.transaction_id} className={getOrderClass(order.category)}>
+                        <tr key={order.transaction_id}>
                             <td>{order.transaction_id}</td>
-                            <td>{order.colour_code}</td>
+                            <td>
+                                {order.current_status === "Ready" ? (
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Colour Code"
+                                        value={colourCodes[order.transaction_id] || ""}
+                                        onChange={(e) =>
+                                            setColourCodes(prev => ({
+                                                ...prev,
+                                                [order.transaction_id]: e.target.value.toUpperCase()
+                                            }))
+                                        }
+                                    />
+                                ) : (
+                                    order.colour_code
+                                )}
+                            </td>
                             <td>{order.paint_type}</td>
                             <td>{order.paint_quantity}</td>
                             <td>{order.current_status}</td>
@@ -159,28 +148,28 @@ const Dashboard = () => {
                             <td>{order.order_type}</td>
                             <td>{order.assigned_employee || "Unassigned"}</td>
                             <td>
-                              <select
-    className="form-select"
-    value={order.current_status}
-    onChange={(e) => updateStatus(order.transaction_id, e.target.value)}
->
-    <option value={order.current_status}>{order.current_status}</option>
+                                <select
+                                    className="form-select"
+                                    value={order.current_status}
+                                    onChange={(e) => updateStatus(order.transaction_id, e.target.value, order.assigned_employee)}
+                                >
+                                    <option value={order.current_status}>{order.current_status}</option>
 
-    {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
-    {order.current_status === "Mixing" && <option value="Spraying">Spraying</option>}
-    
-    {order.current_status === "Spraying" && (
-        <>
-            <option value="Re-Mixing">Back to Mixing</option>
-            <option value="Ready">Ready</option>
-        </>
-    )}
-     {order.current_status === "Re-Mixing" && <option value="Spraying">Spraying</option>}
+                                    {order.current_status === "Waiting" && <option value="Mixing">Mixing</option>}
+                                    {order.current_status === "Mixing" && <option value="Spraying">Spraying</option>}
+                                    
+                                    {order.current_status === "Spraying" && (
+                                        <>
+                                            <option value="Re-Mixing">Back to Mixing</option>
+                                            <option value="Ready">Ready</option>
+                                        </>
+                                    )}
+                                    {order.current_status === "Re-Mixing" && <option value="Spraying">Spraying</option>}
 
-    {order.current_status === "Ready" && userRole === "Admin" && (
-        <option value="Complete">Complete</option>
-    )}
-</select>
+                                    {order.current_status === "Ready" && userRole === "Admin" && (
+                                        <option value="Complete">Complete</option>
+                                    )}
+                                </select>
                             </td>
                         </tr>
                     ))}
