@@ -56,13 +56,13 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
- const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeCode = null;
     let employeeName = currentEmp;
-    let updatedColourCode = currentColourCode  || "";
+    let updatedColourCode = currentColourCode || "Unknown"; // Ensure it is never undefined or empty
 
-    // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
-    if (["Mixing", "Spraying", "Re-Mixing"].includes(newStatus)) {
+    // ✅ Require Employee Code for "Re-Mixing", "Mixing", "Spraying"
+    if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
         employeeCode = prompt("🔍 Enter Employee Code for assignment:");
         if (!employeeCode) return;
 
@@ -80,21 +80,23 @@ const Dashboard = () => {
     }
 
     // ✅ Require Colour Code for "Ready"
-    if (newStatus === "Ready" && (!currentColourCode || currentColourCode === "Pending")) {
+    if (newStatus === "Ready" && (!currentColourCode || currentColourCode.trim() === "")) {
         let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
+
         if (!inputCode || inputCode.trim() === "") {
             alert("❌ Colour Code is required to mark the order as Ready!");
             return;
         }
-        updatedColourCode = inputCode;
+
+        updatedColourCode = inputCode.trim();
     }
 
-    // ✅ Single API Call with Updated Fields
+    // ✅ Ensure Colour Code is sent in the request
     try {
         await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
             assigned_employee: employeeName, // Ensure employee is always assigned
-            colour_code: updatedColourCode,
+            colour_code: updatedColourCode, // Now properly formatted
             userRole
         });
 
