@@ -4,20 +4,6 @@ import "./styles/queueStyles.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
 
-// 🔧 ETC category-based time estimates
-const ETC_TIMES = {
-    "New Mix": 120,
-    "Reorder Mix": 30,
-    "Colour Code": 60,
-};
-
-const getOrderClass = (category) => {
-    if (category === "New Mix") return "urgent";
-    if (category === "Reorder Mix") return "warning";
-    if (category === "Colour Code") return "standard";
-    return "";
-};
-
 const Dashboard = () => {
     const [orders, setOrders] = useState([]);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
@@ -63,7 +49,6 @@ const Dashboard = () => {
         let employeeName = currentEmp || "Unassigned";
         let updatedColourCode = currentColourCode;
 
-        // ✅ Assign employee if required
         if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
             let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
             if (!employeeCode) {
@@ -84,16 +69,14 @@ const Dashboard = () => {
             }
         }
 
-        // ✅ Show custom modal for colour code if missing + status is "Ready"
         if (
             newStatus === "Ready" &&
             (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
         ) {
             updatedColourCode = await openColourModal();
-            if (!updatedColourCode) return; // Cancelled or empty
+            if (!updatedColourCode) return;
         }
 
-        // ✅ Proceed with update
         try {
             await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
                 current_status: newStatus,
@@ -110,10 +93,9 @@ const Dashboard = () => {
         }
     };
 
-    // ✅ Function to open modal and return a Promise
     const openColourModal = () => {
         return new Promise((resolve) => {
-            setColourInput(""); // Reset input
+            setColourInput("");
             setShowColourModal(true);
             setPendingColourResolve(() => resolve);
         });
