@@ -56,64 +56,66 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-    const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
-        let employeeCode = null;
-        let employeeName = currentEmp || "Unknown"; // Ensure employee is always defined
-        let updatedColourCode = currentColourCode || "Pending"; // Prevent empty values
+const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+    let employeeName = currentEmp || "Unassigned";
+    let updatedColourCode = currentColourCode;
 
-        // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
-        if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
-            employeeCode = prompt("🔍 Enter Employee Code for assignment:");
-            if (!employeeCode) return;
-
-            try {
-                const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-                if (!employeeResponse.data || !employeeResponse.data.employee_name) {
-                    alert("❌ Invalid Employee Code! Try again.");
-                    return;
-                }
-                employeeName = employeeResponse.data.employee_name;
-            } catch (error) {
-                alert("❌ Unable to verify employee code! Please check your connection.");
-                return;
-            }
+    // ✅ Require Employee Assignment only for specific statuses
+    if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
+        let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
+        if (!employeeCode) {
+            alert("❌ Employee Code is required!");
+            return;
         }
 
-        // ✅ Require Colour Code for "Ready"
-        if (newStatus === "Ready" && (!currentColourCode || currentColourCode.trim() === "")) {
-            let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
-            if (!inputCode || inputCode.trim() === "") {
-                alert("❌ Colour Code is required to mark the order as Ready!");
+        try {
+            const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+            if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+                alert("❌ Invalid Employee Code! Try again.");
                 return;
             }
-            updatedColourCode = inputCode.trim();
+            employeeName = employeeResponse.data.employee_name;
+        } catch (error) {
+            alert("❌ Unable to verify employee code! Please check your connection.");
+            return;
         }
+    }
 
-        // ✅ Log Payload Before Sending
-        console.log("📦 Sending Payload:", {
+    // ✅ Always prompt for Colour Code if missing or "Pending"
+    if (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending") {
+        let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
+        if (!inputCode || inputCode.trim() === "") {
+            alert("❌ Colour Code is required!");
+            return;
+        }
+        updatedColourCode = inputCode.trim();
+    }
+
+    // ✅ Log Payload
+    console.log("📦 Sending Payload:", {
+        current_status: newStatus,
+        assigned_employee: employeeName,
+        colour_code: updatedColourCode,
+        userRole
+    });
+
+    try {
+        await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
             assigned_employee: employeeName,
             colour_code: updatedColourCode,
             userRole
         });
 
-        try {
-            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
-                current_status: newStatus,
-                assigned_employee: employeeName,
-                colour_code: updatedColourCode,
-                userRole
-            });
-
-            console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
-            setTimeout(() => {
-                fetchOrders();
-            }, 500);
-        } catch (error) {
-            alert("❌ Error updating order status!");
-            console.error("🚨 Error updating:", error);
-        }
-    };
+        console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
+        setTimeout(() => {
+            fetchOrders();
+        }, 500);
+    } catch (error) {
+        alert("❌ Error updating order status!");
+        console.error("🚨 Error updating:", error);
+    }
+};
 
     return (
         <div className="container mt-4">
