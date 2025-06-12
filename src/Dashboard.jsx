@@ -60,7 +60,7 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
     let employeeName = currentEmp || "Unassigned";
     let updatedColourCode = currentColourCode;
 
-    // ✅ Require Employee Assignment only for specific statuses
+    // ✅ Require Employee Assignment for these statuses
     if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
         let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
         if (!employeeCode) {
@@ -81,11 +81,14 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
         }
     }
 
-    // ✅ Always prompt for Colour Code if missing or "Pending"
-    if (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending") {
+    // ✅ Only prompt for Colour Code if status is "Ready" AND code is missing or "Pending"
+    if (
+        newStatus === "Ready" &&
+        (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
+    ) {
         let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
         if (!inputCode || inputCode.trim() === "") {
-            alert("❌ Colour Code is required!");
+            alert("❌ Colour Code is required to mark this order as Ready!");
             return;
         }
         updatedColourCode = inputCode.trim();
@@ -116,6 +119,7 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
         console.error("🚨 Error updating:", error);
     }
 };
+
 
     return (
         <div className="container mt-4">
