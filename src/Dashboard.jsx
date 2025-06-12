@@ -59,7 +59,7 @@ const Dashboard = () => {
     const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
         let employeeCode = null;
         let employeeName = currentEmp || "Unknown"; // Ensure employee is always defined
-        let updatedColourCode = currentColourCode || "Unknown"; // Prevent empty values
+        let updatedColourCode = currentColourCode || "Pending"; // Prevent empty values
 
         // ✅ Require Employee Code for "Mixing", "Spraying", "Re-Mixing"
         if (["Re-Mixing", "Mixing", "Spraying"].includes(newStatus)) {
