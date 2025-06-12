@@ -6,44 +6,6 @@
     <title>Queue System New Index</title>
 </head>
 <body>
-
-    <!-- Colour Code Modal -->
-    <div id="colourCodeModal" style="display:none; position:fixed; top:30%; left:35%; background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
-        <label for="colourInput">🎨 Enter Colour Code:</label><br />
-        <input type="text" id="colourInput" />
-        <br /><br />
-        <button onclick="submitColourCode()">Submit</button>
-        <button onclick="closeColourModal()">Cancel</button>
-    </div>
-
-    <!-- JavaScript for modal logic -->
-    <script>
-        let resolveColourCode = null;
-
-        function openColourModal() {
-            document.getElementById("colourInput").value = "";
-            document.getElementById("colourCodeModal").style.display = "block";
-
-            return new Promise((resolve) => {
-                resolveColourCode = resolve;
-            });
-        }
-
-        function submitColourCode() {
-            const value = document.getElementById("colourInput").value.trim();
-            if (value === "") {
-                alert("❌ Colour Code is required!");
-                return;
-            }
-            document.getElementById("colourCodeModal").style.display = "none";
-            resolveColourCode(value);
-        }
-
-        function closeColourModal() {
-            document.getElementById("colourCodeModal").style.display = "none";
-            resolveColourCode(null);
-        }
-    </script>
-
+    <div id="root"></div>
 </body>
 </html>
