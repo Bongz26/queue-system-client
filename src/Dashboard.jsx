@@ -60,7 +60,7 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-   const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeName = currentEmp || "Unassigned";
     let updatedColourCode = currentColourCode;
 
@@ -123,28 +123,6 @@ const Dashboard = () => {
         console.error("🚨 Error updating:", error);
     }
 };
-
-    const openColourModal = () => {
-        return new Promise((resolve) => {
-            setColourInput("");
-            setShowColourModal(true);
-            setPendingColourResolve(() => resolve);
-        });
-    };
-
-    const submitColourCode = () => {
-        if (!colourInput.trim()) {
-            alert("❌ Colour Code is required!");
-            return;
-        }
-        setShowColourModal(false);
-        pendingColourResolve(colourInput.trim());
-    };
-
-    const cancelColourModal = () => {
-        setShowColourModal(false);
-        pendingColourResolve(null);
-    };
 
     return (
         <div className="container mt-4">
