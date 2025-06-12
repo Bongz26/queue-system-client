@@ -107,6 +107,34 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
     }
 };
 
+const [showColourModal, setShowColourModal] = useState(false);
+const [pendingColourResolve, setPendingColourResolve] = useState(null);
+const [colourInput, setColourInput] = useState("");
+
+// Function to open modal and return a Promise
+const openColourModal = () => {
+    return new Promise((resolve) => {
+        setColourInput(""); // Reset input
+        setShowColourModal(true);
+        setPendingColourResolve(() => resolve);
+    });
+};
+
+const submitColourCode = () => {
+    if (!colourInput.trim()) {
+        alert("❌ Colour Code is required!");
+        return;
+    }
+    setShowColourModal(false);
+    pendingColourResolve(colourInput.trim());
+};
+
+const cancelColourModal = () => {
+    setShowColourModal(false);
+    pendingColourResolve(null);
+};
+
+
     return (
         <div className="container mt-4">
             <h1 className="text-center">Paints Queue Dashboard</h1>
@@ -166,6 +194,29 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
                     ))}
                 </tbody>
             </table>
+    {showColourModal && (
+    <div style={{
+        position: "fixed",
+        top: "30%",
+        left: "35%",
+        background: "#fff",
+        border: "1px solid #ccc",
+        padding: "20px",
+        zIndex: 1000
+    }}>
+        <label htmlFor="colourInput">🎨 Enter Colour Code:</label><br />
+        <input
+            type="text"
+            id="colourInput"
+            value={colourInput}
+            onChange={(e) => setColourInput(e.target.value)}
+        />
+        <br /><br />
+        <button onClick={submitColourCode}>Submit</button>
+        <button onClick={cancelColourModal}>Cancel</button>
+    </div>
+)}
+
         </div>
     );
 };
