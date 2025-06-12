@@ -120,7 +120,6 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
     }
 };
 
-
     return (
         <div className="container mt-4">
             <h1 className="text-center">Paints Queue Dashboard</h1>
