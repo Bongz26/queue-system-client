@@ -4,6 +4,21 @@ import "./styles/queueStyles.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
 
+// 🔧 ETC category-based time estimates
+const ETC_TIMES = {
+    "New Mix": 120,
+    "Reorder Mix": 30,
+    "Colour Code": 60,
+};
+
+// ✅ Function to determine row styling
+const getOrderClass = (category) => {
+    if (category === "New Mix") return "urgent";
+    if (category === "Reorder Mix") return "warning";
+    if (category === "Colour Code") return "standard";
+    return "";
+};
+
 const Dashboard = () => {
     const [orders, setOrders] = useState([]);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
@@ -174,14 +189,6 @@ const Dashboard = () => {
                     ))}
                 </tbody>
             </table>
-            {showColourModal && (
-                <div className="modal">
-                    <label>🎨 Enter Colour Code:</label>
-                    <input type="text" value={colourInput} onChange={(e) => setColourInput(e.target.value)} />
-                    <button onClick={submitColourCode}>Submit</button>
-                    <button onClick={cancelColourModal}>Cancel</button>
-                </div>
-            )}
         </div>
     );
 };
