@@ -60,7 +60,7 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
     let employeeName = currentEmp || "Unassigned";
     let updatedColourCode = currentColourCode;
 
-    // ✅ Require Employee Assignment only for specific statuses
+    // ✅ Assign employee if required
     if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
         let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
         if (!employeeCode) {
@@ -69,36 +69,28 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
         }
 
         try {
-            const employeeResponse = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-            if (!employeeResponse.data || !employeeResponse.data.employee_name) {
+            const response = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+            if (!response.data?.employee_name) {
                 alert("❌ Invalid Employee Code! Try again.");
                 return;
             }
-            employeeName = employeeResponse.data.employee_name;
-        } catch (error) {
-            alert("❌ Unable to verify employee code! Please check your connection.");
+            employeeName = response.data.employee_name;
+        } catch {
+            alert("❌ Error verifying employee.");
             return;
         }
     }
 
-    // ✅ Always prompt for Colour Code if missing or "Pending"
-    if (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending") {
-        let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
-        if (!inputCode || inputCode.trim() === "") {
-            alert("❌ Colour Code is required!");
-            return;
-        }
-        updatedColourCode = inputCode.trim();
+    // ✅ Show custom modal for colour code if missing + status is "Ready"
+    if (
+        newStatus === "Ready" &&
+        (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
+    ) {
+        updatedColourCode = await openColourModal();
+        if (!updatedColourCode) return; // Cancelled or empty
     }
 
-    // ✅ Log Payload
-    console.log("📦 Sending Payload:", {
-        current_status: newStatus,
-        assigned_employee: employeeName,
-        colour_code: updatedColourCode,
-        userRole
-    });
-
+    // ✅ Proceed with update
     try {
         await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
             current_status: newStatus,
@@ -107,13 +99,11 @@ const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) =
             userRole
         });
 
-        console.log(`✅ Order updated: ${orderId} → ${newStatus}, Colour Code: ${updatedColourCode}`);
-        setTimeout(() => {
-            fetchOrders();
-        }, 500);
+        console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
+        setTimeout(fetchOrders, 500);
     } catch (error) {
-        alert("❌ Error updating order status!");
-        console.error("🚨 Error updating:", error);
+        alert("❌ Error updating order.");
+        console.error(error);
     }
 };
 
