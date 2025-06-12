@@ -11,7 +11,6 @@ const ETC_TIMES = {
     "Colour Code": 60,
 };
 
-// ✅ Function to determine row styling
 const getOrderClass = (category) => {
     if (category === "New Mix") return "urgent";
     if (category === "Reorder Mix") return "warning";
@@ -25,9 +24,6 @@ const Dashboard = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [userRole, setUserRole] = useState("User"); // Default role
-    const [showColourModal, setShowColourModal] = useState(false);
-    const [pendingColourResolve, setPendingColourResolve] = useState(null);
-    const [colourInput, setColourInput] = useState("");
 
     const handleLogin = () => {
         const role = prompt("Enter your role (Admin/User):");
@@ -60,11 +56,11 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-  const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
     let employeeName = currentEmp || "Unassigned";
     let updatedColourCode = currentColourCode;
 
-    // ✅ Require Employee Assignment for these statuses
+    // ✅ Require Employee Assignment only for specific statuses
     if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
         let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
         if (!employeeCode) {
@@ -85,14 +81,11 @@ const Dashboard = () => {
         }
     }
 
-    // ✅ Only prompt for Colour Code if status is "Ready" AND code is missing or "Pending"
-    if (
-        newStatus === "Ready" &&
-        (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
-    ) {
+    // ✅ Always prompt for Colour Code if missing or "Pending"
+    if (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending") {
         let inputCode = prompt("🎨 Please enter the **Colour Code** for this Paint:");
         if (!inputCode || inputCode.trim() === "") {
-            alert("❌ Colour Code is required to mark this order as Ready!");
+            alert("❌ Colour Code is required!");
             return;
         }
         updatedColourCode = inputCode.trim();
