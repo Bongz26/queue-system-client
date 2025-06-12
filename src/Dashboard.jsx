@@ -24,6 +24,9 @@ const Dashboard = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [userRole, setUserRole] = useState("User"); // Default role
+    const [showColourModal, setShowColourModal] = useState(false);
+    const [pendingColourResolve, setPendingColourResolve] = useState(null);
+    const [colourInput, setColourInput] = useState("");
 
     const handleLogin = () => {
         const role = prompt("Enter your role (Admin/User):");
@@ -56,84 +59,79 @@ const Dashboard = () => {
         fetchOrders();
     }, [fetchOrders]);
 
-const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
-    let employeeName = currentEmp || "Unassigned";
-    let updatedColourCode = currentColourCode;
+    const updateStatus = async (orderId, newStatus, currentColourCode, currentEmp) => {
+        let employeeName = currentEmp || "Unassigned";
+        let updatedColourCode = currentColourCode;
 
-    // ✅ Assign employee if required
-    if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
-        let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
-        if (!employeeCode) {
-            alert("❌ Employee Code is required!");
-            return;
-        }
-
-        try {
-            const response = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
-            if (!response.data?.employee_name) {
-                alert("❌ Invalid Employee Code! Try again.");
+        // ✅ Assign employee if required
+        if (["Re-Mixing", "Mixing", "Spraying", "Ready"].includes(newStatus)) {
+            let employeeCode = prompt("🔍 Enter Employee Code to assign this order:");
+            if (!employeeCode) {
+                alert("❌ Employee Code is required!");
                 return;
             }
-            employeeName = response.data.employee_name;
-        } catch {
-            alert("❌ Error verifying employee.");
+
+            try {
+                const response = await axios.get(`${BASE_URL}/api/employees?code=${employeeCode}`);
+                if (!response.data?.employee_name) {
+                    alert("❌ Invalid Employee Code! Try again.");
+                    return;
+                }
+                employeeName = response.data.employee_name;
+            } catch {
+                alert("❌ Error verifying employee.");
+                return;
+            }
+        }
+
+        // ✅ Show custom modal for colour code if missing + status is "Ready"
+        if (
+            newStatus === "Ready" &&
+            (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
+        ) {
+            updatedColourCode = await openColourModal();
+            if (!updatedColourCode) return; // Cancelled or empty
+        }
+
+        // ✅ Proceed with update
+        try {
+            await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+                current_status: newStatus,
+                assigned_employee: employeeName,
+                colour_code: updatedColourCode,
+                userRole
+            });
+
+            console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
+            setTimeout(fetchOrders, 500);
+        } catch (error) {
+            alert("❌ Error updating order.");
+            console.error(error);
+        }
+    };
+
+    // ✅ Function to open modal and return a Promise
+    const openColourModal = () => {
+        return new Promise((resolve) => {
+            setColourInput(""); // Reset input
+            setShowColourModal(true);
+            setPendingColourResolve(() => resolve);
+        });
+    };
+
+    const submitColourCode = () => {
+        if (!colourInput.trim()) {
+            alert("❌ Colour Code is required!");
             return;
         }
-    }
+        setShowColourModal(false);
+        pendingColourResolve(colourInput.trim());
+    };
 
-    // ✅ Show custom modal for colour code if missing + status is "Ready"
-    if (
-        newStatus === "Ready" &&
-        (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
-    ) {
-        updatedColourCode = await openColourModal();
-        if (!updatedColourCode) return; // Cancelled or empty
-    }
-
-    // ✅ Proceed with update
-    try {
-        await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
-            current_status: newStatus,
-            assigned_employee: employeeName,
-            colour_code: updatedColourCode,
-            userRole
-        });
-
-        console.log(`✅ Order updated: ${orderId} → ${newStatus}`);
-        setTimeout(fetchOrders, 500);
-    } catch (error) {
-        alert("❌ Error updating order.");
-        console.error(error);
-    }
-};
-
-const [showColourModal, setShowColourModal] = useState(false);
-const [pendingColourResolve, setPendingColourResolve] = useState(null);
-const [colourInput, setColourInput] = useState("");
-
-// Function to open modal and return a Promise
-const openColourModal = () => {
-    return new Promise((resolve) => {
-        setColourInput(""); // Reset input
-        setShowColourModal(true);
-        setPendingColourResolve(() => resolve);
-    });
-};
-
-const submitColourCode = () => {
-    if (!colourInput.trim()) {
-        alert("❌ Colour Code is required!");
-        return;
-    }
-    setShowColourModal(false);
-    pendingColourResolve(colourInput.trim());
-};
-
-const cancelColourModal = () => {
-    setShowColourModal(false);
-    pendingColourResolve(null);
-};
-
+    const cancelColourModal = () => {
+        setShowColourModal(false);
+        pendingColourResolve(null);
+    };
 
     return (
         <div className="container mt-4">
@@ -194,29 +192,14 @@ const cancelColourModal = () => {
                     ))}
                 </tbody>
             </table>
-    {showColourModal && (
-    <div style={{
-        position: "fixed",
-        top: "30%",
-        left: "35%",
-        background: "#fff",
-        border: "1px solid #ccc",
-        padding: "20px",
-        zIndex: 1000
-    }}>
-        <label htmlFor="colourInput">🎨 Enter Colour Code:</label><br />
-        <input
-            type="text"
-            id="colourInput"
-            value={colourInput}
-            onChange={(e) => setColourInput(e.target.value)}
-        />
-        <br /><br />
-        <button onClick={submitColourCode}>Submit</button>
-        <button onClick={cancelColourModal}>Cancel</button>
-    </div>
-)}
-
+            {showColourModal && (
+                <div className="modal">
+                    <label>🎨 Enter Colour Code:</label>
+                    <input type="text" value={colourInput} onChange={(e) => setColourInput(e.target.value)} />
+                    <button onClick={submitColourCode}>Submit</button>
+                    <button onClick={cancelColourModal}>Cancel</button>
+                </div>
+            )}
         </div>
     );
 };
