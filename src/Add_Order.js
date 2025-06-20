@@ -14,8 +14,7 @@ const AddOrder = () => {
     const [paintQuantity, setPaintQuantity] = useState("");
     const [startTime, setStartTime] = useState("");
 
-    // ✅ Generate Date in DDMMYYYY format (Transaction ID prefix)
-    const formatDateDDMMYYYY = () => { 
+    const formatDateDDMMYYYY = () => {
         const date = new Date();
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -23,32 +22,33 @@ const AddOrder = () => {
         return `${day}${month}${year}`;
     };
 
-    // ✅ Handle Transaction ID for Walk-in orders (User manually enters last 4 digits)
-   /* const handleTransactionIDChange = (e) => {
-        if (orderType === "Paid") {
-            const userDigits = e.target.value.replace(/\D/g, "").slice(-4); // Ensure only 4 digits
-            setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
+    useEffect(() => {
+        if (orderType === "Order") {
+            setTransactionID(`${formatDateDDMMYYYY()}-PO_${Math.floor(1000 + Math.random() * 9000)}`);
+        } else {
+            setTransactionID(`${formatDateDDMMYYYY()}-`);
         }
-    };*/
+        setStartTime(new Date().toISOString());
+    }, [orderType]);
 
-  useEffect(() => {
-    if (orderType === "Order") {
-        setTransactionID(`${formatDateDDMMYYYY()}-PO_${Math.floor(1000 + Math.random() * 9000)}`);
-    } else {
-        setTransactionID(`${formatDateDDMMYYYY()}-`); // ✅ Allows user input for "Paid" orders
-    }
-   // console.log("Generated Transaction ID:", transactionID);
+    useEffect(() => {
+        console.log("Generated Transaction ID:", transactionID);
+    }, [transactionID]);
 
-    // ✅ Automatically set `start_time`
-    setStartTime(new Date().toISOString());
-}, [orderType]);
-
-useEffect(() => {
-    console.log("Generated Transaction ID:", transactionID);
-}, [transactionID]); // ✅ Logs whenever transactionID changes
-
-    // ✅ Validate Contact Number (10 digits only)
     const validateContact = (input) => /^\d{10}$/.test(input);
+
+    const handleContactChange = (e) => {
+        const input = e.target.value;
+        setClientContact(input);
+
+        if (validateContact(input)) {
+            const stored = localStorage.getItem(`client_${input}`);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                setClientName(parsed.name);
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,16 +63,17 @@ useEffect(() => {
             return;
         }
 
-        if(!colorCode.trim() && category!=='New Mix'){
+        if (!colorCode.trim() && category !== "New Mix") {
             alert("❌ Colour Code cannot be empty!");
             return;
         }
-        if (!paintQuantity || !["250ml", "500ml","750ml", "1L","1.25L","1.5L","2L","2.5L","3L", "4L", "5L", "10L"].includes(paintQuantity)) {
+
+        if (!paintQuantity || !["250ml", "500ml", "750ml", "1L", "1.25L", "1.5L", "2L", "2.5L", "3L", "4L", "5L", "10L"].includes(paintQuantity)) {
             alert("❌ Please select a valid paint quantity!");
             return;
         }
 
-        if (transactionID.length !== 13 && orderType !== 'Order') { // ✅ Ensures YYYYMMDD-XXXX (Total 13 characters)
+        if (transactionID.length !== 13 && orderType !== 'Order') {
             alert("❌ Paid orders must have a 4-digit Transaction ID!");
             return;
         }
@@ -87,7 +88,7 @@ useEffect(() => {
             paint_quantity: paintQuantity,
             current_status: "Waiting",
             order_type: orderType,
-            start_time: startTime // ✅ Ensuring start time is stored properly
+            start_time: startTime
         };
 
         console.log("🚀 Sending order data:", newOrder);
@@ -98,8 +99,14 @@ useEffect(() => {
             alert("✅ Order placed successfully!");
             printReceipt(newOrder);
 
-            // ✅ Reset Fields
-            setTransactionID(formatDateDDMMYYYY() + "-"); // ✅ Reset for next Walk-in order
+            // Save to localStorage using mobile number
+            const clientData = {
+                name: clientName,
+                contact: clientContact
+            };
+            localStorage.setItem(`client_${clientContact}`, JSON.stringify(clientData));
+
+            setTransactionID(formatDateDDMMYYYY() + "-");
             setClientName("");
             setClientContact("");
             setPaintType("");
@@ -114,20 +121,18 @@ useEffect(() => {
         }
     };
 
-    // ✅ Receipt Printing Function
- const printReceipt = (order) => {
-    console.log("🖨️ Preparing receipt for order:", order);
-    const printWindow = window.open("", "_blank", "width=600,height=400");
-    if (!printWindow) {
-        alert("❌ Printing blocked! Enable pop-ups in your browser.");
-        return;
-    }
+    const printReceipt = (order) => {
+        const printWindow = window.open("", "_blank", "width=600,height=400");
+        if (!printWindow) {
+            alert("❌ Printing blocked! Enable pop-ups in your browser.");
+            return;
+        }
 
-    const formatLine = (label, value) => {
-        return `${label.padEnd(15)}: ${value}`;
-    };
+        const formatLine = (label, value) => {
+            return `${label.padEnd(15)}: ${value}`;
+        };
 
-    const receiptContent = `
+        const receiptContent = `
 =============================================
          PROCUSHION QUEUE SYSTEM - RECEIPT
 =============================================
@@ -148,29 +153,28 @@ Track ID       : TRK-${order.transaction_id}
 ========================================
 `;
 
-    printWindow.document.write(`
-        <html>
-            <head>
-                <title>Receipt</title>
-                <style>
-                    body {
-                        font-family: monospace;
-                        white-space: pre;
-                        font-size: 12px;
-                        margin: 0;
-                        padding: 10px;
-                    }
-                </style>
-            </head>
-            <body>
-                ${receiptContent}
-            </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-};
-
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Receipt</title>
+                    <style>
+                        body {
+                            font-family: monospace;
+                            white-space: pre;
+                            font-size: 12px;
+                            margin: 0;
+                            padding: 10px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${receiptContent}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    };
 
     return (
         <div className="container mt-4">
@@ -183,25 +187,37 @@ Track ID       : TRK-${order.transaction_id}
                 </select>
 
                 <label>Transaction ID:</label>
-                <input 
+                <input
                     type="text"
                     className="form-control"
                     value={transactionID}
-                onChange={(e) => {
-                     if (orderType === "Paid") {
-                        const userDigits = e.target.value.replace(/\D/g, "").slice(-4);
-                        setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
-                            }
-                        }}
-                    disabled={orderType === "Order"} 
+                    onChange={(e) => {
+                        if (orderType === "Paid") {
+                            const userDigits = e.target.value.replace(/\D/g, "").slice(-4);
+                            setTransactionID(formatDateDDMMYYYY() + "-" + userDigits);
+                        }
+                    }}
+                    disabled={orderType === "Order"}
                     placeholder="Enter 4-digit ID for Paid Customer"
                 />
 
-                <label>Client Name:</label>
-                <input type="text" className="form-control" value={clientName} onChange={(e) => setClientName(e.target.value)} required />
-
                 <label>Client Contact:</label>
-                <input type="text" className="form-control" value={clientContact} onChange={(e) => setClientContact(e.target.value)} required />
+                <input
+                    type="text"
+                    className="form-control"
+                    value={clientContact}
+                    onChange={handleContactChange}
+                    required
+                />
+
+                <label>Client Name:</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    required
+                />
 
                 <label>Category:</label>
                 <select className="form-control" value={category} onChange={(e) => setCategory(e.target.value)}>
@@ -211,15 +227,21 @@ Track ID       : TRK-${order.transaction_id}
                 </select>
 
                 <label>Car Details:</label>
-                <input type="text" className="form-control" value={paintType} onChange={(e) => setPaintType(e.target.value)} required />
+                <input
+                    type="text"
+                    className="form-control"
+                    value={paintType}
+                    onChange={(e) => setPaintType(e.target.value)}
+                    required
+                />
 
                 <label>Colour Code:</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    value={colorCode} 
-                    onChange={(e) => setColorCode(e.target.value)} 
-                    disabled={category === "New Mix"} 
+                <input
+                    type="text"
+                    className="form-control"
+                    value={colorCode}
+                    onChange={(e) => setColorCode(e.target.value)}
+                    disabled={category === "New Mix"}
                 />
 
                 <label>Paint Quantity:</label>
@@ -231,13 +253,12 @@ Track ID       : TRK-${order.transaction_id}
                     <option value="1L">1L</option>
                     <option value="1.25L">1.25L</option>
                     <option value="1.5L">1.5L</option>
-                    <option value="2L">2L</option>    
+                    <option value="2L">2L</option>
                     <option value="2.5L">2.5L</option>
                     <option value="3L">3L</option>
                     <option value="4L">4L</option>
                     <option value="5L">5L</option>
                     <option value="10L">10L</option>
-                    
                 </select>
 
                 <button type="submit" className="btn btn-primary mt-3">Add Order</button>
