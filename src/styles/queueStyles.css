@@ -1,20 +1,20 @@
 /* 🔴 Urgent (New Mix) */
 .table tr.urgent > td {
-  background-color: #fff5f5 !important;
-  border-left: 6px solid #dc3545;  /* Bootstrap Danger Red */
-  color: #58151c;
+  background-color: #fff1f2 !important;
+  border-left: 6px solid #e03131;
+  color: #3b0b0b;
 }
 
 /* 🟡 Warning (Reorder Mix) */
 .table tr.warning > td {
-  background-color: #fffbea !important;
-  border-left: 6px solid #ffc107;  /* Bootstrap Warning Yellow */
-  color: #5f4b00;
+  background-color: #fff8e1 !important;
+  border-left: 6px solid #ffae00;
+  color: #3e2e02;
 }
 
 /* 🔵 Standard (Colour Code) */
 .table tr.standard > td {
-  background-color: #eef7fc !important;
-  border-left: 6px solid #0d6efd;  /* Bootstrap Primary Blue */
-  color: #052c65;
+  background-color: #e8f4fc !important;
+  border-left: 6px solid #228be6;
+  color: #0a2540;
 }
