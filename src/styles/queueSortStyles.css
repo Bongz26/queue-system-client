@@ -1,31 +1,10 @@
-/*
-.flash-row {
-  animation: flashFade 2s ease-in-out;
-  background-color: #d4edda !important;
-}
-
-@keyframes flashFade {
-  0%   { background-color: #d4edda; }
-  100% { background-color: inherit; }
-}
-*/
-/*.flash-row {
-  animation: flashBorder 3s ease-in-out;
-}
-
-@keyframes flashBorder {
-  0%   { box-shadow: 0 0 0px 0px lime; }
-  50%  { box-shadow: 0 0 10px 4px lime; }
-  100% { box-shadow: 0 0 0px 0px transparent; }
-}
-*/
 .flash-row > td {
   animation: flashRowFade 4s ease-in-out;
   will-change: background-color;
 }
 
 @keyframes flashRowFade {
-  0%   { background-color: #d4edda; }       /* soft green */
-  50%  { background-color: #e6f4ea; }
+  0%   { background-color: #21cc4a; }       /* soft green */
+  50%  { background-color: #80c493; }
   100% { background-color: inherit; }
 }
