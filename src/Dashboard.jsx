@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./styles/queueStyles.css";
 import LoginPopup from "./LoginPopup";
+import ColourCodeModal from "./ColourCodeModal";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
 
@@ -177,6 +178,20 @@ const handleLogin = () => setShowLogin(true);
           </div>
         </div>
       </div>
+  {pendingColourUpdate && (
+  <ColourCodeModal
+    onSubmit={(code) => {
+      updateStatus(
+        pendingColourUpdate.orderId,
+        pendingColourUpdate.newStatus,
+        code,
+        pendingColourUpdate.employeeName
+      );
+      setPendingColourUpdate(null);
+    }}
+    onCancel={() => setPendingColourUpdate(null)}
+  />
+)}
     </div>
   );
 };
