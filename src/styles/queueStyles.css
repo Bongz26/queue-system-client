@@ -21,3 +21,12 @@
   background-color: #f8f9fa;
   transition: background-color 0.3s ease;
 }
+
+.badge {
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 0.4em 0.75em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
