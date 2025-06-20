@@ -12,6 +12,9 @@ const ETC_TIMES = {
   "Reorder Mix": 30,
   "Colour Code": 60,
 };
+const getOrderClass = (category) => {
+ 
+};
 
 
 
