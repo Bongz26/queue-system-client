@@ -134,7 +134,7 @@ const getOrderClass = (category) => {
               <thead className="table-dark">
                 <tr>
                   <th>Transaction ID</th>
-                  <th>Status</th>
+                  <th>Category</th>
                   <th>Col. Code</th>
                   <th>Car Details</th>
                   <th>Amount</th>
