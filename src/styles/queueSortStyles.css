@@ -1,7 +1,7 @@
 /*
 .flash-row {
   animation: flashFade 2s ease-in-out;
-  background-color: #d4edda !important; /* light green 
+  background-color: #d4edda !important;
 }
 
 @keyframes flashFade {
@@ -9,8 +9,7 @@
   100% { background-color: inherit; }
 }
 */
-
-.flash-row {
+/*.flash-row {
   animation: flashBorder 3s ease-in-out;
 }
 
@@ -18,4 +17,15 @@
   0%   { box-shadow: 0 0 0px 0px lime; }
   50%  { box-shadow: 0 0 10px 4px lime; }
   100% { box-shadow: 0 0 0px 0px transparent; }
+}
+*/
+
+.flash-row {
+  animation: flashRowFade 4s ease-in-out;
+}
+
+@keyframes flashRowFade {
+  0%   { background-color: #d4edda; }       /* soft green */
+  50%  { background-color: #e6f4ea; }
+  100% { background-color: inherit; }
 }
