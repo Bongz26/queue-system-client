@@ -1,17 +1,17 @@
 /*.table tr.urgent > td {
-  border-left: 6px solid #e03131;  crimson 
+  border-left: 6px solid #e03131;  
   background-color: #fff !important;
   color: #212529;
 }
 
 .table tr.warning > td {
-  border-left: 6px solid #f59f00;  amber 
+  border-left: 6px solid #f59f00;  
   background-color: #fff !important;
   color: #212529;
 }
 
 .table tr.standard > td {
-  border-left: 6px solid #1c7ed6; /* azure 
+  border-left: 6px solid #1c7ed6; 
   background-color: #fff !important;
   color: #212529;
 }
