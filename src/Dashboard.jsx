@@ -28,6 +28,7 @@ const getOrderClass = (category) => {
   const [showLogin, setShowLogin] = useState(false);
   const handleLogin = () => setShowLogin(true);
   const [pendingColourUpdate, setPendingColourUpdate] = useState(null);
+  const [recentlyUpdatedId, setRecentlyUpdatedId] = useState(null);
   
 
   const fetchOrders = useCallback(async () => {
@@ -86,19 +87,23 @@ const getOrderClass = (category) => {
         }
 
     try {
-      await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
-        current_status: newStatus,
-        assigned_employee: employeeName,
-        colour_code: updatedColourCode,
-        userRole
-      });
-      setTimeout(() => {
-        fetchOrders();
-      }, 500);
-    } catch (error) {
-      alert("❌ Error updating order status!");
-      console.error("🚨 Error updating:", error);
-    }
+  await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
+    current_status: newStatus,
+    assigned_employee: employeeName,
+    colour_code: updatedColourCode,
+    userRole
+  });
+
+  setRecentlyUpdatedId(orderId);
+  setTimeout(() => setRecentlyUpdatedId(null), 2000); // highlight lasts 2 seconds
+
+  setTimeout(() => {
+    fetchOrders();
+  }, 500);
+} catch (error) {
+  alert("❌ Error updating order status!");
+  console.error("🚨 Error updating:", error);
+}
   };
 
   return (
@@ -140,7 +145,9 @@ const getOrderClass = (category) => {
               </thead>
               <tbody>
                 {orders.map(order => (
-                  <tr key={order.transaction_id} className={getOrderClass(order.category)}>
+            <tr key={order.transaction_id}
+                  className={`${getOrderClass(order.category)} 
+            ${recentlyUpdatedId === order.transaction_id ? "flash-row" : ""}`}>
                     <td>{order.transaction_id}</td>
                     <td>{order.colour_code}</td>
                     <td>{order.paint_type}</td>
