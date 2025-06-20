@@ -1,36 +1,17 @@
-/* Urgent Orders - High Priority */
-.table tr.urgent {
-    background-color: red !important;
-    color: white !important;
-    font-weight: bold;
-}
-
-/* Warning Orders - Potential Delay */
-.table tr.warning {
-    background-color: yellow !important;
-    color: black !important;
-    font-weight: bold;
-}
-
-/* Standard Orders - Regular Queue */
-.table tr.standard {
-    background-color: blue!important;
-    color: white !important;
-}
-
-/*tr.urgent, tr.warning, tr.standard {
-    border: 5px solid lime !important;
-}*/
-
 .table tr.urgent > td {
-    background-color: red !important;
-    color: white !important;
+  background-color: #f8d7da !important; /* light red */
+  color: #721c24 !important;
+  font-weight: 500;
 }
+
 .table tr.warning > td {
-    background-color: yellow !important;
-    color: black !important;
+  background-color: #fff3cd !important; /* light yellow */
+  color: #856404 !important;
+  font-weight: 500;
 }
+
 .table tr.standard > td {
-    background-color: blue !important;
-    color: white !important;
+  background-color: #d1ecf1 !important; /* light blue */
+  color: #0c5460 !important;
+  font-weight: 500;
 }
