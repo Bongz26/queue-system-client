@@ -1,0 +1,9 @@
+.flash-row {
+  animation: flashFade 2s ease-in-out;
+  background-color: #d4edda !important; /* light green */
+}
+
+@keyframes flashFade {
+  0%   { background-color: #d4edda; }
+  100% { background-color: inherit; }
+}
