@@ -130,7 +130,7 @@ const getOrderClass = (category) => {
           </button>
 
           <div className="table-responsive">
-            <table className="table table-bordered table-hover">
+            <table className="table table-hover align-middle table-bordered">
               <thead className="table-dark">
                 <tr>
                   <th>Transaction ID</th>
