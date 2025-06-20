@@ -7,7 +7,7 @@ const ColourCodeModal = ({ onSubmit, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!code.trim()) {
-      alert("❌ Colour Code is required!");
+      alert("❌ Colour Code is required! CCM");
       return;
     }
     onSubmit(code.trim());
@@ -16,7 +16,7 @@ const ColourCodeModal = ({ onSubmit, onCancel }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-box shadow">
-        <h5 className="mb-3">🎨 Enter Colour Code</h5>
+        <h5 className="mb-3">🎨 Enter Colour Code CCM</h5>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
