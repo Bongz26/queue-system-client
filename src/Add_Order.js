@@ -37,7 +37,7 @@ const AddOrder = () => {
 
   // Detect autofill after mount
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const detectAutofill = () => {
       const contactInput = document.querySelector("input[name='clientContact']");
       if (contactInput) {
         const filledValue = contactInput.value;
@@ -50,8 +50,12 @@ const AddOrder = () => {
           }
         }
       }
-    }, 500);
-    return () => clearTimeout(timer);
+    };
+
+    window.addEventListener("load", detectAutofill);
+    setTimeout(detectAutofill, 500);
+
+    return () => window.removeEventListener("load", detectAutofill);
   }, []);
 
   const validateContact = (input) => /^\d{10}$/.test(input);
@@ -110,18 +114,14 @@ const AddOrder = () => {
       start_time: startTime
     };
 
-    console.log("🚀 Sending order data:", newOrder);
-
     try {
       await axios.post(`${BASE_URL}/api/orders`, newOrder);
       alert("✅ Order placed successfully!");
       printReceipt(newOrder);
 
-      // Save client info
       const clientData = { name: clientName, contact: clientContact };
       localStorage.setItem(`client_${clientContact}`, JSON.stringify(clientData));
 
-      // Reset form
       setTransactionID(formatDateDDMMYYYY() + "-");
       setClientName("");
       setClientContact("");
@@ -259,10 +259,10 @@ Track ID       : TRK-${order.transaction_id}
           disabled={category === "New Mix"}
         />
 
-                <label>Paint Quantity:</label>
-                <select className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required>
+        <label>Paint Quantity:</label>
+                  <select className="form-control" value={paintQuantity} onChange={(e) => setPaintQuantity(e.target.value)} required>
                     <option value="">Select Quantity</option>
-                    <option value="250ml">250ml</option>
+                    <option value="250ml">250ml</option>                   
                     <option value="500ml">500ml</option>
                     <option value="750ml">750ml</option>
                     <option value="1L">1L</option>
