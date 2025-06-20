@@ -1,17 +1,23 @@
-.table tr.urgent > td {
-  border-left: 6px solid #e03131; /* crimson */
+/*.table tr.urgent > td {
+  border-left: 6px solid #e03131; /* crimson 
   background-color: #fff !important;
   color: #212529;
 }
 
 .table tr.warning > td {
-  border-left: 6px solid #f59f00; /* amber */
+  border-left: 6px solid #f59f00; /* amber 
   background-color: #fff !important;
   color: #212529;
 }
 
 .table tr.standard > td {
-  border-left: 6px solid #1c7ed6; /* azure */
+  border-left: 6px solid #1c7ed6; /* azure 
   background-color: #fff !important;
   color: #212529;
+}
+*/
+
+.table tbody tr:hover > td {
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
 }
