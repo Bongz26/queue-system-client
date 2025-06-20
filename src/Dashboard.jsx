@@ -145,9 +145,10 @@ const getOrderClass = (category) => {
               </thead>
               <tbody>
                 {orders.map(order => (
-            <tr key={order.transaction_id}
-                  className={`${getOrderClass(order.category)} 
-            ${recentlyUpdatedId === order.transaction_id ? "flash-row" : ""}`}>
+             <tr
+                    key={order.transaction_id}
+                    className={recentlyUpdatedId === order.transaction_id ? "flash-row" : ""}>
+               
                     <td>{order.transaction_id}</td>
                     <td>
                         {order.category === "New Mix" && <span className="badge bg-danger">New Mix</span>}
