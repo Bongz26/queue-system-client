@@ -19,9 +19,9 @@
   100% { box-shadow: 0 0 0px 0px transparent; }
 }
 */
-
-.flash-row {
+.flash-row > td {
   animation: flashRowFade 4s ease-in-out;
+  will-change: background-color;
 }
 
 @keyframes flashRowFade {
