@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./styles/queueStyles.css";
+import "./styles/queueSortStyles.css";
 import LoginPopup from "./LoginPopup";
 import ColourCodeModal from "./ColourCodeModal";
 
