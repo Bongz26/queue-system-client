@@ -134,6 +134,7 @@ const getOrderClass = (category) => {
               <thead className="table-dark">
                 <tr>
                   <th>Transaction ID</th>
+                  <th>Status</th>
                   <th>Col. Code</th>
                   <th>Car Details</th>
                   <th>Amount</th>
@@ -150,6 +151,11 @@ const getOrderClass = (category) => {
                   className={`${getOrderClass(order.category)} 
             ${recentlyUpdatedId === order.transaction_id ? "flash-row" : ""}`}>
                     <td>{order.transaction_id}</td>
+                    <td>
+                        {order.category === "New Mix" && <span className="badge bg-danger">New Mix</span>}
+                        {order.category === "Reorder Mix" && <span className="badge bg-warning text-dark">Reorder</span>}
+                        {order.category === "Colour Code" && <span className="badge bg-primary">Colour Code</span>}
+                    </td>
                     <td>{order.colour_code}</td>
                     <td>{order.paint_type}</td>
                     <td>{order.paint_quantity}</td>
