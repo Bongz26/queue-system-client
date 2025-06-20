@@ -73,17 +73,17 @@ const getOrderClass = (category) => {
       }
     }
 
-    if (
-      newStatus === "Ready" &&
-      (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
-    ) {
-      let inputCode = prompt("🎨 Please enter the Colour Code for this Paint:");
-      if (!inputCode || inputCode.trim() === "") {
-        alert("❌ Colour Code is required to mark this order as Ready!");
-        return;
-      }
-      updatedColourCode = inputCode.trim();
-    }
+      if (
+          newStatus === "Ready" &&
+          (!updatedColourCode || updatedColourCode.trim() === "" || updatedColourCode === "Pending")
+        ) {
+          setPendingColourUpdate({
+            orderId,
+            newStatus,
+            employeeName,
+          });
+          return;
+        }
 
     try {
       await axios.put(`${BASE_URL}/api/orders/${orderId}`, {
