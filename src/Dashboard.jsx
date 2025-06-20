@@ -19,14 +19,15 @@ const getOrderClass = (category) => {
   return "";
 };
 
-const Dashboard = () => {
+  const Dashboard = () => {
   const [orders, setOrders] = useState([]);
   const [activeOrdersCount, setActiveOrdersCount] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [userRole, setUserRole] = useState("User");
   const [showLogin, setShowLogin] = useState(false);
-const handleLogin = () => setShowLogin(true);
+  const handleLogin = () => setShowLogin(true);
+  const [pendingColourUpdate, setPendingColourUpdate] = useState(null);
   
 
   const fetchOrders = useCallback(async () => {
