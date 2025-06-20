@@ -1,9 +1,21 @@
+/*
 .flash-row {
   animation: flashFade 2s ease-in-out;
-  background-color: #d4edda !important; /* light green */
+  background-color: #d4edda !important; /* light green 
 }
 
 @keyframes flashFade {
   0%   { background-color: #d4edda; }
   100% { background-color: inherit; }
+}
+*/
+
+.flash-row {
+  animation: flashBorder 3s ease-in-out;
+}
+
+@keyframes flashBorder {
+  0%   { box-shadow: 0 0 0px 0px lime; }
+  50%  { box-shadow: 0 0 10px 4px lime; }
+  100% { box-shadow: 0 0 0px 0px transparent; }
 }
