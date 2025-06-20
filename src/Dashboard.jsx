@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./styles/queueStyles.css";
+import LoginPopup from "./LoginPopup";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://queue-backendser.onrender.com";
 
@@ -23,15 +24,9 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [userRole, setUserRole] = useState("User");
-
-  const handleLogin = () => {
-    const role = prompt("Enter your role (Admin/User):");
-    if (["Admin", "User"].includes(role)) {
-      setUserRole(role);
-    } else {
-      alert("❌ Invalid role! Use 'Admin' or 'User'");
-    }
-  };
+  const [showLogin, setShowLogin] = useState(false);
+const handleLogin = () => setShowLogin(true);
+  
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -110,6 +105,12 @@ const Dashboard = () => {
         <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
           <h4 className="mb-0">🎨 Paints Queue Dashboard</h4>
           <button onClick={handleLogin} className="btn btn-light btn-sm">Login as Admin</button>
+          {showLogin && (
+  <LoginPopup
+    onLogin={(role) => setUserRole(role)}
+    onClose={() => setShowLogin(false)}
+  />
+)}
         </div>
         <div className="card-body bg-light">
           <p className="mb-2">
