@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/ColourCodeModal.css";
+import "./styles/ColourCodeModal.css";
 
 const ColourCodeModal = ({ onSubmit, onCancel }) => {
   const [code, setCode] = useState("");
