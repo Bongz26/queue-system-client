@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/LoginPopup.css";
+import "./styles/LoginPopup.css";
 
 const LoginPopup = ({ onLogin, onClose }) => {
   const [role, setRole] = useState("");
