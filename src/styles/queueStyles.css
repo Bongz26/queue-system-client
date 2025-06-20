@@ -1,11 +1,11 @@
 /*.table tr.urgent > td {
-  border-left: 6px solid #e03131; /* crimson 
+  border-left: 6px solid #e03131;  crimson 
   background-color: #fff !important;
   color: #212529;
 }
 
 .table tr.warning > td {
-  border-left: 6px solid #f59f00; /* amber 
+  border-left: 6px solid #f59f00;  amber 
   background-color: #fff !important;
   color: #212529;
 }
