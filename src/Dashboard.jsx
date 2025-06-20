@@ -13,12 +13,7 @@ const ETC_TIMES = {
   "Colour Code": 60,
 };
 
-const getOrderClass = (category) => {
-  if (category === "New Mix") return "table-danger";
-  if (category === "Reorder Mix") return "table-warning";
-  if (category === "Colour Code") return "table-info";
-  return "";
-};
+
 
   const Dashboard = () => {
   const [orders, setOrders] = useState([]);
