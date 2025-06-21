@@ -16,13 +16,10 @@
   color: #212529;
 }
 */
-.card-body {
-  background-color: #fdfdfd;
+body {
+  background-color: #f1f3f5;  /* soft gray */
 }
 
-.table {
-  background-color: transparent; /* Let rows float over the card's base */
-}
 .table tbody tr:hover > td {
   background-color: #f8f9fa;
   transition: background-color 0.3s ease;
