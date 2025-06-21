@@ -36,7 +36,7 @@ const getOrderClass = (category) => {
     setError("");
     try {
       const response = await axios.get(`${BASE_URL}/api/orders`);
-      const activeOrders = response.data.filter(order => order.current_status !== "Ready");
+      const activeOrders = response.data.filter(order => order.current_status !== "Ready" && !=="Waiting");
       const waitingOrders = response.data.filter(order => order.current_status === "Waiting");
       
       setOrders(response.data);
@@ -160,7 +160,7 @@ const getOrderClass = (category) => {
                     <td>{order.transaction_id}</td>
                     <td>
                         {order.category === "New Mix" && <span className="badge bg-danger">New Mix</span>}
-                        {order.category === "Reorder Mix" && <span className="badge bg-warning text-dark">Reorder</span>}
+                        {order.category === "Reorder Mix" && <span className="badge bg-warning text-dark">Mix More</span>}
                         {order.category === "Colour Code" && <span className="badge bg-primary">Colour Code</span>}
                     </td>
                     <td>{order.colour_code}</td>
