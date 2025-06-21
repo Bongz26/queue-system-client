@@ -36,7 +36,7 @@ const getOrderClass = (category) => {
     setError("");
     try {
       const response = await axios.get(`${BASE_URL}/api/orders`);
-      const activeOrders = response.data.filter(order => order.current_status !== "Ready" && !=="Waiting");
+      const activeOrders = response.data.filter(order => order.current_status !== "Ready" && order.current_status !== "Waiting");
       const waitingOrders = response.data.filter(order => order.current_status === "Waiting");
       
       setOrders(response.data);
