@@ -21,6 +21,7 @@ const getOrderClass = (category) => {
   const Dashboard = () => {
   const [orders, setOrders] = useState([]);
   const [activeOrdersCount, setActiveOrdersCount] = useState(0);
+  const [waitingOrdersCount, setWaitingOrdersCount] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [userRole, setUserRole] = useState("User");
@@ -36,8 +37,11 @@ const getOrderClass = (category) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/orders`);
       const activeOrders = response.data.filter(order => order.current_status !== "Ready");
+      const waitingOrders = response.data.filter(order => order.current_status === "Waiting");
+      
       setOrders(response.data);
       setActiveOrdersCount(activeOrders.length);
+      setWaitingOrdersCount(waitingOrders.length);
     } catch (error) {
       setError("Error fetching orders.");
     } finally {
@@ -122,6 +126,10 @@ const getOrderClass = (category) => {
           <p className="mb-2">
             <strong>Active Orders:</strong> {activeOrdersCount}
           </p>
+          <p className="mb-2">
+            <strong>Waiting Orders:</strong> {waitingOrdersCount}
+          </p>
+
           {error && <div className="alert alert-danger">{error}</div>}
           <button className="btn btn-secondary mb-3" onClick={fetchOrders} disabled={loading}>
             {loading ? "Refreshing..." : "🔄 Refresh"}
